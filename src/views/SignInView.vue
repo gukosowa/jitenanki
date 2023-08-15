@@ -1,7 +1,7 @@
 <template>
   <div class="m-3 mt-5">
     <input-text label="Email" v-model="email" class="mb-3" />
-    <input-text label="Password" v-model="password" />
+    <input-text :attr-input="{ type: 'password' }" label="Password" v-model="password" />
 
     <base-button class="mt-5" @click="onLogin">Sign in</base-button>
   </div>
@@ -12,22 +12,22 @@ import InputText from '@/components/InputText.vue'
 import { ref } from 'vue'
 import BaseButton from '@/components/BaseButton.vue'
 
-let email = ref('')
-let password = ref('')
+let email = ref('markus@test.com')
+let password = ref('12345678')
 
-import { client } from '@/utils/backend'
-const { account } = client()
+import { useAccountStore } from '@/stores/account'
+import router from '@/router'
 
-function onLogin() {
-  const promise = account.createEmailSession(email.value, password.value)
+async function onLogin() {
+  // appwriteService.login(email.value, password.value)
 
-  promise.then(
-    function (response) {
-      console.log(response) // Success
-    },
-    function (error) {
-      console.log(error) // Failure
-    },
-  )
+  const account = useAccountStore()
+
+  const success = await account.login(email.value, password.value)
+  if (success) {
+    await router.push('/')
+  } else {
+    await router.push('/sign-in')
+  }
 }
 </script>

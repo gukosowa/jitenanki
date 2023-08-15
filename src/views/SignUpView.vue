@@ -12,23 +12,20 @@ import InputText from '@/components/InputText.vue'
 import { ref } from 'vue'
 import BaseButton from '@/components/BaseButton.vue'
 
-let email = ref('')
-let password = ref('')
+let email = ref('markus@test.com')
+let password = ref('12345678')
 
-import { client } from '@/utils/backend'
-import { ID } from 'appwrite'
-const { account } = client()
+import { useAccountStore } from '@/stores/account'
+import router from '@/router'
+const account = useAccountStore()
 
-function onRegister() {
-  const promise = account.create(ID.unique(), email.value, password.value)
+async function onRegister() {
+  const success = account.register(email.value, password.value)
 
-  promise.then(
-    function (response) {
-      console.log(response) // Success
-    },
-    function (error) {
-      console.log(error) // Failure
-    },
-  )
+  if (success) {
+    await router.push('/')
+  } else {
+    await router.push('/sign-in')
+  }
 }
 </script>

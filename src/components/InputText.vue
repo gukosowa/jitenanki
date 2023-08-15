@@ -7,7 +7,7 @@
     </div>
     <input
       class="bg-gray-700 h-9 focus:bg-gray-600 box-border px-2 pt-2 rounded grow"
-      type="text"
+      :type="type ?? 'text'"
       v-model="value"
       v-bind="attrInput"
     />
@@ -21,6 +21,7 @@ import { computed } from 'vue'
 const props = defineProps<{
   modelValue: string
   label: string
+  type?: string
   clearable?: boolean
   attrInput?: Record<string, unknown>
 }>()

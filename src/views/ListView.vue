@@ -8,5 +8,5 @@
 import InputText from '@/components/InputText.vue'
 import { ref } from 'vue'
 
-let inputT = ref()
+let inputT = ref('')
 </script>
