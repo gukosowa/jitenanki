@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+root {
+  --primary-color: #3498db;
+}
+
 input:focus {
   outline: none !important;
 }

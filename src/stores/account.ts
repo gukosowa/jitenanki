@@ -28,38 +28,14 @@ export const useAccountStore = defineStore('account', () => {
       })
   }
 
-  async function login(email: string, password: string): Promise<boolean> {
-    const promise = account.value.createEmailSession(email, password)
-
-    return promise.then(
-      function (response) {
-        updateSession()
-        console.log({ response }) // Success
-        return true
-      },
-      function (error) {
-        console.log({ error }) // Failure
-        return false
-      },
-    )
+  async function login(email: string, password: string) {
+    return account.value.createEmailSession(email, password).then(() => updateSession())
   }
 
   async function register(email: string, password: string) {
-    const promise = account.value.create(ID.unique(), email, password)
-
-    return promise.then(
-      async function (response) {
-        await login(email, password)
-        console.log({ response }) // Success
-
-        return true
-      },
-      function (error) {
-        console.log({ error }) // Failure
-
-        return false
-      },
-    )
+    return account.value.create(ID.unique(), email, password).then(async () => {
+      await login(email, password)
+    })
   }
 
   async function logout() {

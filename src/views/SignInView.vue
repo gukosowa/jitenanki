@@ -17,17 +17,21 @@ let password = ref('12345678')
 
 import { useAccountStore } from '@/stores/account'
 import router from '@/router'
+import { useToastStore } from '@/stores/toastStore'
+
+const account = useAccountStore()
+const toast = useToastStore()
 
 async function onLogin() {
-  // appwriteService.login(email.value, password.value)
-
-  const account = useAccountStore()
-
-  const success = await account.login(email.value, password.value)
-  if (success) {
-    await router.push('/')
-  } else {
-    await router.push('/sign-in')
-  }
+  await account
+    .login(email.value, password.value)
+    .then(async () => {
+      await router.push('/')
+      toast.add('Hello ' + email.value + ' 👋', 'SUCCESS')
+    })
+    .catch(async (error) => {
+      await router.push('/sign-in')
+      toast.error(error)
+    })
 }
 </script>

@@ -19,7 +19,8 @@ export const appwriteBackend = credentials[useCredential]
 export const useClientStore = defineStore('client', () => {
   const client = new Client()
   client
-    .setEndpoint(appwriteBackend.endpoint)
+    .setEndpoint(window.location.origin + '/v1')
+    // .setEndpoint(appwriteBackend.endpoint)
     .setProject(appwriteBackend.project)
     .setLocale('de_AT')
 

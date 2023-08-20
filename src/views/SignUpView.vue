@@ -17,15 +17,20 @@ let password = ref('12345678')
 
 import { useAccountStore } from '@/stores/account'
 import router from '@/router'
+import { useToastStore } from '@/stores/toastStore'
 const account = useAccountStore()
+const toast = useToastStore()
 
 async function onRegister() {
-  const success = account.register(email.value, password.value)
-
-  if (success) {
-    await router.push('/')
-  } else {
-    await router.push('/sign-in')
-  }
+  account
+    .register(email.value, password.value)
+    .then(async () => {
+      await router.push('/')
+      toast.add('Success register', 'SUCCESS')
+    })
+    .catch(async (error) => {
+      await router.push('/sign-up')
+      toast.error(error)
+    })
 }
 </script>
