@@ -1,7 +1,13 @@
 <template>
   <div class="m-3 mt-5">
-    <input-text label="Email" v-model="email" class="mb-3" />
-    <input-text label="Password" v-model="password" />
+    <input-text
+      label="Email"
+      type="email"
+      v-model="email"
+      class="mb-3"
+      @keydown.enter="focusNextInput($event)"
+    />
+    <input-text label="Password" v-model="password" @keydown.enter="onRegister" />
 
     <base-button :loading="loading" class="mt-5" @click="onRegister">Sign up</base-button>
   </div>
@@ -18,12 +24,15 @@ let password = ref('12345678')
 import { useAccountStore } from '@/stores/account'
 import router from '@/router'
 import { useToastStore } from '@/stores/toastStore'
+import { blurAll, focusNextInput } from '@/utils/dom'
 const account = useAccountStore()
 const toast = useToastStore()
 
 const loading = ref(false)
 
 async function onRegister() {
+  blurAll()
+
   loading.value = true
 
   await account
