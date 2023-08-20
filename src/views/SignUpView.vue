@@ -3,7 +3,7 @@
     <input-text label="Email" v-model="email" class="mb-3" />
     <input-text label="Password" v-model="password" />
 
-    <base-button class="mt-5" @click="onRegister">Sign up</base-button>
+    <base-button :loading="loading" class="mt-5" @click="onRegister">Sign up</base-button>
   </div>
 </template>
 
@@ -21,8 +21,12 @@ import { useToastStore } from '@/stores/toastStore'
 const account = useAccountStore()
 const toast = useToastStore()
 
+const loading = ref(false)
+
 async function onRegister() {
-  account
+  loading.value = true
+
+  await account
     .register(email.value, password.value)
     .then(async () => {
       await router.push('/')
@@ -32,5 +36,7 @@ async function onRegister() {
       await router.push('/sign-up')
       toast.error(error)
     })
+
+  loading.value = false
 }
 </script>

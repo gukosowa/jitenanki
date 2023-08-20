@@ -3,7 +3,7 @@
     width="200px"
     height="200px"
     viewBox="0 0 24 24"
-    fill="#fff"
+    :fill="color"
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
@@ -13,4 +13,23 @@
     />
   </svg>
 </template>
-<script setup></script>
+
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+import { useAppStore } from '@/stores/appStore'
+
+const appStore = useAppStore()
+const color = ref('#ffffff')
+
+watch(
+  () => appStore.darkMode,
+  (isDark) => {
+    if (isDark) {
+      color.value = '#ffffff'
+    } else {
+      color.value = '#000000'
+    }
+  },
+  { immediate: true },
+)
+</script>

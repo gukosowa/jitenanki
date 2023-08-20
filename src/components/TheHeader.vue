@@ -17,8 +17,13 @@
         ><icon-signup class="w-8 h-8 p-1"
       /></RouterLink>
       <icon-logout
-        v-if="!!accountStore.isLogged"
+        v-if="!!accountStore.isLogged && !loadingLogout"
         class="w-8 h-8 p-1 cursor-pointer"
+        @click="onLogout"
+      />
+      <icon-spinner
+        v-if="loadingLogout"
+        class="w-8 h-8 p-1 animate-spin cursor-pointer"
         @click="onLogout"
       />
     </nav>
@@ -32,23 +37,32 @@ import IconSignup from '@/components/icons/IconSignup.vue'
 import router from '../router'
 import IconLogout from '@/components/icons/IconLogout.vue'
 import { useAccountStore } from '@/stores/account'
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import DarkModeSwitch from '@/components/DarkModeSwitch.vue'
 import { useToastStore } from '@/stores/toastStore'
+import IconSpinner from '@/components/icons/IconSpinner.vue'
 
 const accountStore = useAccountStore()
 const toast = useToastStore()
+const loadingLogout = ref(false)
 
 onMounted(async () => {
   console.log(await accountStore.user)
 })
 
 async function onLogout() {
-  await accountStore.logout()
+  loadingLogout.value = true
+  try {
+    await accountStore.logout()
 
-  await router.push('/sign-in')
+    await router.push('/sign-in')
 
-  toast.add('Bye 👋', 'SUCCESS')
+    toast.add('Bye 👋', 'SUCCESS')
+  } catch (e) {
+    toast.error(e)
+  }
+
+  loadingLogout.value = false
 }
 </script>
 

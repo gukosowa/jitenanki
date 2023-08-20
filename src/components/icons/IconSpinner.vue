@@ -1,5 +1,10 @@
 <template>
-  <svg fill="#ffffff" viewBox="0 -0.5 25 25" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff">
+  <svg
+    :fill="internalColor"
+    viewBox="0 -0.5 25 25"
+    xmlns="http://www.w3.org/2000/svg"
+    :stroke="internalColor"
+  >
     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
     <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
     <g id="SVGRepo_iconCarrier">
@@ -9,3 +14,25 @@
     </g>
   </svg>
 </template>
+
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+import { useAppStore } from '@/stores/appStore'
+
+const appStore = useAppStore()
+const props = defineProps<{ color?: string }>()
+
+const internalColor = ref(props.color ?? '#ffffff')
+
+watch(
+  () => appStore.darkMode,
+  (isDark) => {
+    if (isDark) {
+      internalColor.value = props.color ?? '#ffffff'
+    } else {
+      internalColor.value = props.color ?? '#000000'
+    }
+  },
+  { immediate: true },
+)
+</script>

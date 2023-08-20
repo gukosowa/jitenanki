@@ -3,7 +3,7 @@
     <input-text label="Email" v-model="email" class="mb-3" />
     <input-text :attr-input="{ type: 'password' }" label="Password" v-model="password" />
 
-    <base-button class="mt-5" @click="onLogin">Sign in</base-button>
+    <base-button :loading="loading" class="mt-5" @click="onLogin">Sign in</base-button>
   </div>
 </template>
 
@@ -21,8 +21,10 @@ import { useToastStore } from '@/stores/toastStore'
 
 const account = useAccountStore()
 const toast = useToastStore()
+const loading = ref(false)
 
 async function onLogin() {
+  loading.value = true
   await account
     .login(email.value, password.value)
     .then(async () => {
@@ -33,5 +35,7 @@ async function onLogin() {
       await router.push('/sign-in')
       toast.error(error)
     })
+
+  loading.value = false
 }
 </script>
