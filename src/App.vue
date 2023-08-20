@@ -2,7 +2,11 @@
   <the-header />
 
   <main class="flex flex-col m-3 mt-5">
-    <RouterView />
+    <router-view v-slot="{ Component }">
+      <keep-alive>
+        <component :is="Component" :key="$route.fullPath"></component>
+      </keep-alive>
+    </router-view>
   </main>
 
   <BaseToast />
