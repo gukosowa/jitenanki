@@ -253,5 +253,27 @@
             ],
             "indexes": []
         }
+    ],
+    "teams": [
+        {
+            "$id": "64d937d1508972dd8b6e",
+            "name": "dev"
+        }
+    ],
+    "buckets": [
+        {
+            "$id": "64d937fb8077aa95e935",
+            "$createdAt": "2023-08-13T20:07:23.526+00:00",
+            "$updatedAt": "2023-08-13T20:07:23.526+00:00",
+            "$permissions": [],
+            "fileSecurity": false,
+            "name": "public",
+            "enabled": true,
+            "maximumFileSize": 30000000,
+            "allowedFileExtensions": [],
+            "compression": "none",
+            "encryption": true,
+            "antivirus": true
+        }
     ]
 }
