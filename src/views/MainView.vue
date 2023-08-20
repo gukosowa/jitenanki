@@ -1,9 +1,7 @@
 <template>
-  <div>
-    <h1>Main</h1>
+  <h1>Detail / Main</h1>
 
-    <input-text label="main" v-model="inputT" />
-  </div>
+  <input-text label="main" v-model="inputT" />
 </template>
 
 <script setup lang="ts">

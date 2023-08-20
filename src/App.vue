@@ -1,7 +1,7 @@
 <template>
   <the-header />
 
-  <main>
+  <main class="m-3 mt-5">
     <RouterView />
   </main>
 

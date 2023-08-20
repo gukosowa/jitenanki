@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <input-text label="Search" v-model="inputT" />
-  </div>
+  <input-text label="Search" v-model="inputT" />
 </template>
 
 <script setup lang="ts">

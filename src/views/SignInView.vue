@@ -1,16 +1,14 @@
 <template>
-  <div class="m-3 mt-5">
-    <input-text
-      label="Email"
-      type="email"
-      v-model="email"
-      class="mb-3"
-      @keydown.enter="focusNextInput($event)"
-    />
-    <input-text type="password" label="Password" v-model="password" @keydown.enter="onLogin" />
+  <input-text
+    label="Email"
+    type="email"
+    v-model="email"
+    class="mb-3"
+    @keydown.enter="focusNextInput($event)"
+  />
+  <input-text type="password" label="Password" v-model="password" @keydown.enter="onLogin" />
 
-    <base-button :loading="loading" class="mt-5" @click="onLogin">Sign in</base-button>
-  </div>
+  <base-button :loading="loading" class="mt-5" @click="onLogin">Sign in</base-button>
 </template>
 
 <script setup lang="ts">
