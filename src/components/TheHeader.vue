@@ -1,6 +1,6 @@
 <template>
   <header
-    class="bg-gray-400 dark:bg-gray-900 flex w-full h-12 items-center mb-2 drop-shadow-xl z-10 border-b border-gray-500 dark:border-gray-900 px-2"
+    class="sticky top-0 bg-gray-400 dark:bg-gray-900 flex w-full h-12 items-center mb-2 drop-shadow-xl z-10 border-b border-gray-500 dark:border-gray-900 px-2"
   >
     <img src="/icon-192x192.png" class="w-8 h-8" alt="logo" />
     <div class="grow pl-2 overflow-ellipsis overflow-hidden text-gray-800 dark:text-gray-500">
@@ -9,13 +9,15 @@
     <nav class="flex">
       <RouterLink to="/" class="place-self-center mr-3">Quick</RouterLink>
       <RouterLink to="/prompts" class="place-self-center mr-3">Prompts</RouterLink>
+
+      <dark-mode-switch class="mr-3" />
+
       <RouterLink v-if="!accountStore.isLogged" to="/sign-in"
         ><icon-signin class="w-8 h-8 p-1 mr-3"
       /></RouterLink>
       <RouterLink v-if="!accountStore.isLogged" to="/sign-up"
         ><icon-signup class="w-8 h-8 p-1"
       /></RouterLink>
-      <dark-mode-switch class="mr-3" />
 
       <icon-logout
         v-if="!!accountStore.isLogged && !loadingLogout"
@@ -58,7 +60,7 @@ async function onLogout() {
 
     await router.push('/sign-in')
 
-    toast.add('Bye 👋', 'SUCCESS')
+    toast.add('Bye 👋')
   } catch (e) {
     toast.error(e)
   }

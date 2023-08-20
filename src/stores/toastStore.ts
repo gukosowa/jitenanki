@@ -15,7 +15,7 @@ export const useToastStore = defineStore({
   }),
 
   actions: {
-    add(message: string, type: 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS' = 'INFO') {
+    add(message: string, type: 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS' = 'SUCCESS') {
       const toast: Toast = {
         id: uuid(),
         message,

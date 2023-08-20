@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MainView from '../views/MainView.vue'
-import ListView from '@/views/ListView.vue'
+import PromptsView from '@/views/PromptsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,7 +15,7 @@ const router = createRouter({
       path: '/prompts',
       name: 'prompts',
 
-      component: ListView,
+      component: PromptsView,
     },
     {
       path: '/sign-in',

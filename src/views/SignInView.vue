@@ -36,7 +36,7 @@ async function onLogin() {
     .login(email.value, password.value)
     .then(async () => {
       await router.push('/')
-      toast.add('Hello ' + email.value + ' 👋', 'SUCCESS')
+      toast.add('Hello ' + email.value + ' 👋')
     })
     .catch(async (error) => {
       await router.push('/sign-in')

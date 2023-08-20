@@ -37,7 +37,7 @@ async function onRegister() {
     .register(email.value, password.value)
     .then(async () => {
       await router.push('/')
-      toast.add('Success register', 'SUCCESS')
+      toast.add('Success register')
     })
     .catch(async (error) => {
       await router.push('/sign-up')

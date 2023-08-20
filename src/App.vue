@@ -1,7 +1,7 @@
 <template>
   <the-header />
 
-  <main class="m-3 mt-5">
+  <main class="flex flex-col m-3 mt-5">
     <RouterView />
   </main>
 
