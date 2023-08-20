@@ -7,15 +7,16 @@
       {{ router.currentRoute.value.name }}
     </div>
     <nav class="flex">
-      <dark-mode-switch class="mr-3" />
-      <RouterLink to="/" class="place-self-center mr-3">Detail</RouterLink>
-      <RouterLink to="/list" class="place-self-center mr-3">List</RouterLink>
+      <RouterLink to="/" class="place-self-center mr-3">Quick</RouterLink>
+      <RouterLink to="/prompts" class="place-self-center mr-3">Prompts</RouterLink>
       <RouterLink v-if="!accountStore.isLogged" to="/sign-in"
         ><icon-signin class="w-8 h-8 p-1 mr-3"
       /></RouterLink>
       <RouterLink v-if="!accountStore.isLogged" to="/sign-up"
         ><icon-signup class="w-8 h-8 p-1"
       /></RouterLink>
+      <dark-mode-switch class="mr-3" />
+
       <icon-logout
         v-if="!!accountStore.isLogged && !loadingLogout"
         class="w-8 h-8 p-1 cursor-pointer"

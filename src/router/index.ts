@@ -7,13 +7,13 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'detail',
+      name: 'quick',
 
       component: MainView,
     },
     {
-      path: '/list',
-      name: 'list',
+      path: '/prompts',
+      name: 'prompts',
 
       component: ListView,
     },
