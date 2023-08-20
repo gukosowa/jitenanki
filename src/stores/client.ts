@@ -1,12 +1,27 @@
 import { defineStore } from 'pinia'
 import { Client } from 'appwrite'
 
-const appwriteEndpoint = 'http://localhost:88/v1'
-const appwriteProject = '64d930ccc397a997a9d7'
+const credentials = {
+  local: {
+    endpoint: 'http://localhost:88/v1',
+    project: '64d930ccc397a997a9d7',
+  },
+
+  cloud: {
+    endpoint: 'https://cloud.appwrite.io/v1',
+    project: '64c652976de88985cf9f',
+  },
+}
+
+const useCredential: keyof typeof credentials = 'local'
+export const appwriteBackend = credentials[useCredential]
 
 export const useClientStore = defineStore('client', () => {
   const client = new Client()
-  client.setEndpoint(appwriteEndpoint).setProject(appwriteProject).setLocale('de_AT')
+  client
+    .setEndpoint(appwriteBackend.endpoint)
+    .setProject(appwriteBackend.project)
+    .setLocale('de_AT')
 
   function subscribe() {
     client.subscribe('*', (response) => {
