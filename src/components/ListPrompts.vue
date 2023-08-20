@@ -1,13 +1,15 @@
 <template>
-  <icon-spinner class="animate-spin w-8 m-auto" v-if="loadingList" />
+  <icon-spinner class="animate-spin w-8 m-auto" v-if="loadingList && !prompts.length" />
   <ul v-else class="border border-gray-900">
     <li
-      class="px-2 py-3"
+      class="px-2 py-3 flex items-center"
       :class="{ 'bg-gray-700 bg-opacity-40': index % 2 === 0 }"
       v-for="(prompt, index) in prompts"
       :key="prompt.$id"
     >
-      {{ prompt.name }}
+      <div class="grow">{{ prompt.name }}</div>
+      <button-icon icon="IconCopy" class="mr-3" color="green" />
+      <button-icon icon="IconDelete" color="red" />
     </li>
   </ul>
 </template>
@@ -17,6 +19,7 @@ import { useClientStore } from '@/stores/client'
 import { collectionEvent, useDatabasesStore } from '@/stores/database'
 import { onMounted, ref } from 'vue'
 import IconSpinner from '@/components/icons/IconSpinner.vue'
+import ButtonIcon from '@/components/ButtonIcon.vue'
 
 const { client } = useClientStore()
 const { databases, databaseId, collections } = useDatabasesStore()
