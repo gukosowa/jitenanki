@@ -80,9 +80,9 @@ client.subscribe(collectionEvent(collections[props.collectionName]), function ()
   loadList()
 })
 
-const appwriteListQuery = inject(
-  'appwriteListQuery-' + collections[props.collectionName],
-) as string[]
+const appwriteListQuery = inject('appwriteListQuery-' + collections[props.collectionName], null) as
+  | string[]
+  | null
 
 onMounted(() => {
   loadList()

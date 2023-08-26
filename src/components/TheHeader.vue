@@ -9,6 +9,7 @@
     <nav class="flex">
       <RouterLink to="/" class="place-self-center mr-3">Quick</RouterLink>
       <RouterLink to="/prompts" class="place-self-center mr-3">Prompts</RouterLink>
+      <RouterLink to="/tags" class="place-self-center mr-3">Tags</RouterLink>
 
       <dark-mode-switch class="mr-3" />
 
