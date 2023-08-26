@@ -55,7 +55,7 @@
 <script setup lang="ts">
 import { useClientStore } from '@/stores/client'
 import { collectionEvent, removeKeysWithDollarSign, useDatabasesStore } from '@/stores/database'
-import { computed, inject, onMounted, ref } from 'vue'
+import { computed, inject, onActivated, onDeactivated, onMounted, ref } from 'vue'
 import IconSpinner from '@/components/icons/IconSpinner.vue'
 import ButtonIcon from '@/components/ButtonIcon.vue'
 
@@ -76,8 +76,15 @@ const props = defineProps<{
 }>()
 const emit = defineEmits(['clearSearch'])
 
-client.subscribe(collectionEvent(collections[props.collectionName]), function () {
-  loadList()
+let subscribe = null
+onActivated(() => {
+  subscribe = client.subscribe(collectionEvent(collections[props.collectionName]), function () {
+    loadList()
+  })
+})
+
+onDeactivated(() => {
+  subscribe?.()
 })
 
 const appwriteListQuery = inject('appwriteListQuery-' + collections[props.collectionName], null) as

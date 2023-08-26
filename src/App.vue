@@ -5,7 +5,7 @@
   <main class="flex flex-col m-3 mt-5">
     <router-view v-slot="{ Component }">
       <keep-alive>
-        <component :is="Component" :key="$route.fullPath"></component>
+        <component :is="Component" :key="$route.fullPath + accountStore.user?.$id"></component>
       </keep-alive>
     </router-view>
   </main>
@@ -21,8 +21,10 @@ import BaseToast from '@/components/BaseToast.vue'
 import { watch } from 'vue'
 import { useAppStore } from '@/stores/appStore'
 import LoadingBar from '@/components/LoadingBar.vue'
+import { useAccountStore } from '@/stores/account'
 
 const appStore = useAppStore()
+const accountStore = useAccountStore()
 
 watch(
   () => appStore.darkMode,
