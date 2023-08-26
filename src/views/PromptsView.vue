@@ -1,62 +1,45 @@
 <template>
-  <section class="flex gap-4">
-    <div class="grow flex gap-4">
-      <input-text
-        class="grow"
-        label="Search"
-        clearable
-        v-model="search"
-        @keydown.enter="onCreate"
+  <appwrite-list-view collection-name="prompts">
+    <template #before-item="{ item }: { item: { favorite: boolean; $id: number } }">
+      <button-icon
+        :icon="item.favorite ? IconStarFilled : IconStarEmpty"
+        transparent
+        loading-inline
+        :icon-color="item.favorite ? '#ffdf00' : 'white'"
+        :loading="loading.is('favorite', item.$id)"
+        icon-class="w-10 h-10 -m-1"
+        class="w-10 h-10"
+        @click="onFavorite(item.$id, item.favorite)"
       />
-    </div>
-    <div class="flex gap-4">
-      <input-text class="grow" label="Create Prompt" v-model="name" @keydown.enter="onCreate" />
-      <base-button :loading="loading.is('create-prompt')" @click="onCreate">Create</base-button>
-    </div>
-  </section>
-
-  <section class="my-5">
-    <ListPrompts @clear-search="search = ''" :search="search" />
-  </section>
+    </template>
+  </appwrite-list-view>
+  <appwrite-list-view collection-name="tags" class="mt-10"></appwrite-list-view>
 </template>
 
 <script setup lang="ts">
-import InputText from '@/components/InputText.vue'
-import { ref } from 'vue'
-import BaseButton from '@/components/BaseButton.vue'
-import { PromptAttributes, useDatabasesStore } from '@/stores/database'
-import { useToastStore } from '@/stores/toastStore'
-import ListPrompts from '@/components/ListPrompts.vue'
+import { provide } from 'vue'
+import { databaseId, useDatabasesStore } from '@/stores/database'
 import { useLoadingStore } from '@/stores/loading'
+import AppwriteListView from '@/views/AppwriteListView.vue'
+import IconStarFilled from '@/components/icons/IconStarFilled.vue'
+import IconStarEmpty from '@/components/icons/IconStarEmpty.vue'
+import ButtonIcon from '@/components/ButtonIcon.vue'
+import { Query } from 'appwrite'
 
-let name = ref('')
-let search = ref('')
-
-const { createDocument, collections } = useDatabasesStore()
-const toast = useToastStore()
+const { collections } = useDatabasesStore()
+const { databases } = useDatabasesStore()
 const loading = useLoadingStore()
 
-async function onCreate() {
-  if (!name.value) {
-    toast.error('Fill name')
-    return
-  }
+provide('appwriteListQuery-' + collections.prompts, [
+  Query.orderDesc('favorite'),
+  Query.orderAsc('name'),
+])
 
-  loading.set('create-prompt')
-
-  await createDocument(collections.prompts, {
-    name: name.value,
-  } as PromptAttributes)
-    .then(async () => {
-      toast.add(`Added "${name.value}"`)
-    })
-    .catch(async (error) => {
-      toast.error(error)
-    })
-
-  loading.finished('create-prompt')
-
-  search.value = name.value
-  name.value = ''
+async function onFavorite(documentId, currentFavorite) {
+  loading.set('favorite', documentId)
+  await databases.updateDocument(databaseId, collections.prompts, documentId, {
+    favorite: !currentFavorite,
+  })
+  loading.finished('favorite', documentId)
 }
 </script>
