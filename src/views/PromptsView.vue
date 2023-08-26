@@ -1,12 +1,22 @@
 <template>
   <section class="flex gap-4">
-    <input-text class="grow" label="Prompt Name" v-model="name" />
-
-    <base-button :loading="loadingCreate" @click="onCreate">Create</base-button>
+    <div class="grow flex gap-4">
+      <input-text
+        class="grow"
+        label="Search"
+        clearable
+        v-model="search"
+        @keydown.enter="onCreate"
+      />
+    </div>
+    <div class="flex gap-4">
+      <input-text class="grow" label="Create Prompt" v-model="name" @keydown.enter="onCreate" />
+      <base-button :loading="loading.is('create-prompt')" @click="onCreate">Create</base-button>
+    </div>
   </section>
 
   <section class="my-5">
-    <ListPrompts />
+    <ListPrompts @clear-search="search = ''" :search="search" />
   </section>
 </template>
 
@@ -17,12 +27,14 @@ import BaseButton from '@/components/BaseButton.vue'
 import { PromptAttributes, useDatabasesStore } from '@/stores/database'
 import { useToastStore } from '@/stores/toastStore'
 import ListPrompts from '@/components/ListPrompts.vue'
+import { useLoadingStore } from '@/stores/loading'
 
 let name = ref('')
-const loadingCreate = ref(false)
+let search = ref('')
 
 const { createDocument, collections } = useDatabasesStore()
 const toast = useToastStore()
+const loading = useLoadingStore()
 
 async function onCreate() {
   if (!name.value) {
@@ -30,7 +42,7 @@ async function onCreate() {
     return
   }
 
-  loadingCreate.value = true
+  loading.set('create-prompt')
 
   await createDocument(collections.prompts, {
     name: name.value,
@@ -42,6 +54,9 @@ async function onCreate() {
       toast.error(error)
     })
 
-  loadingCreate.value = false
+  loading.finished('create-prompt')
+
+  search.value = name.value
+  name.value = ''
 }
 </script>

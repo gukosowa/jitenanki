@@ -26,6 +26,16 @@ export type PromptAttributes = {
   favorite: string
 }
 
+export const removeKeysWithDollarSign = (obj: any) => {
+  const clone = JSON.parse(JSON.stringify(obj))
+  for (const key in clone) {
+    if (key.startsWith('$')) {
+      delete clone[key]
+    }
+  }
+  return clone
+}
+
 export function collectionEvent(collection: string): string {
   return `databases.${databaseId}.collections.${collection}.documents`
 }

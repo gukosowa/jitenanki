@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="21.959896mm"
+   height="27.191656mm"
+   viewBox="0 0 21.959896 27.191656"
+   version="1.1"
+   id="svg1"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-9.1688721,-5.7933181)">
+    <polygon
+       fill="#ffffff"
+       stroke="#000000"
+       stroke-width="10"
+       points="456.388,127.211 456.848,142.439 477.927,128.743 477.927,116.053 "
+       id="polygon57"
+       transform="matrix(0.26458333,0,0,0.26458333,-103.90372,-11.617326)" />
+    <line
+       fill="#ffffff"
+       stroke="#000000"
+       stroke-width="2.64583"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       x1="22.518156"
+       y1="19.008198"
+       x2="16.758963"
+       y2="22.394596"
+       id="line57" />
+    <path
+       fill="#ffffff"
+       stroke="#000000"
+       stroke-width="2.64583"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       d="m 14.667437,9.077057 c -2.36484,0.36222 -4.17565,2.40507 -4.17565,4.87098 l 0.007,14.009949 3.175,1.85209 -0.007,-15.630529 5.57715,-3.33692"
+       id="path58" />
+    <path
+       fill="#ffffff"
+       stroke="#000000"
+       stroke-width="2.64583"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       d="m 18.601797,7.116233 c -2.72151,0 -4.92787,2.206364 -4.92787,4.927863 v 17.76598 l 3.175,1.85208 v -19.38655 l 5.57716,-3.336919 c -0.90356,-1.111518 -2.28045,-1.822454 -3.82429,-1.822454 z"
+       id="path59" />
+    <path
+       fill="#ffffff"
+       stroke="#000000"
+       stroke-width="2.64583"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       d="m 20.794927,27.605297 c 2.7215,0 4.92786,-2.20636 4.92786,-4.92786 v -5.06016 l -3.175,-1.85208 v 6.68073 l -5.57715,3.33692 c 0.90355,1.111519 2.28045,1.82245 3.82429,1.82245 z"
+       id="path60" />
+    <path
+       fill="#ffffff"
+       stroke="#000000"
+       stroke-width="2.64583"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       d="m 27.973597,11.222566 c -1.37953,-2.345799 -4.39975,-3.129491 -6.74555,-1.749949 l -4.36192,2.56487 0.0127,3.67585 5.75919,-3.3864 5.70336,3.116 c 0.49953,-1.34197 0.41486,-2.88952 -0.36778,-4.220371 z"
+       id="path61" />
+    <path
+       fill="#ffffff"
+       stroke="#000000"
+       stroke-width="2.64583"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       d="M 18.168677,25.248926"
+       id="path62" />
+    <path
+       fill="#ffffff"
+       stroke="#000000"
+       stroke-width="2.64583"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       d="m 29.197297,21.351077 c 1.31525,-2.382571 0.44953,-5.3803 -1.93304,-6.69554 l -4.43019,-2.44502 -3.15568,1.88437 5.84888,3.228439 0.22595,6.495261 c 1.41023,-0.25374 2.69822,-1.115491 3.44408,-2.46751 z"
+       id="path63" />
+    <polygon
+       fill="#ffffff"
+       points="456.388,127.211 456.848,142.439 477.927,128.743 477.927,116.053 "
+       id="polygon63"
+       transform="matrix(0.26458333,0,0,0.26458333,-103.90372,-11.617326)" />
+    <line
+       fill="#ffffff"
+       stroke="#000000"
+       stroke-width="1.05833"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       x1="22.518156"
+       y1="19.008198"
+       x2="16.758963"
+       y2="22.394596"
+       id="line63" />
+    <path
+       fill="#ffffff"
+       stroke="#000000"
+       stroke-width="1.05833"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       d="m 14.667437,9.077057 c -2.36484,0.36222 -4.17565,2.40507 -4.17565,4.87098 l 0.007,14.009949 3.175,1.85209 -0.007,-15.630529 5.57715,-3.33692"
+       id="path64" />
+    <path
+       fill="#ffffff"
+       stroke="#000000"
+       stroke-width="1.05833"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       d="m 18.601797,7.116233 c -2.72151,0 -4.92787,2.206364 -4.92787,4.927863 v 17.76598 l 3.175,1.85208 v -19.38655 l 5.57716,-3.336919 c -0.90356,-1.111518 -2.28045,-1.822454 -3.82429,-1.822454 z"
+       id="path65" />
+    <path
+       fill="#ffffff"
+       stroke="#000000"
+       stroke-width="1.05833"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       d="m 20.794927,27.605297 c 2.7215,0 4.92786,-2.20636 4.92786,-4.92786 v -5.06016 l -3.175,-1.85208 v 6.68073 l -5.57715,3.33692 c 0.90355,1.111519 2.28045,1.82245 3.82429,1.82245 z"
+       id="path66" />
+    <path
+       fill="#ffffff"
+       stroke="#000000"
+       stroke-width="1.05833"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       d="m 27.973597,11.222566 c -1.37953,-2.345799 -4.39975,-3.129491 -6.74555,-1.749949 l -4.36192,2.56487 0.0127,3.67585 5.75919,-3.3864 5.70336,3.116 c 0.49953,-1.34197 0.41486,-2.88952 -0.36778,-4.220371 z"
+       id="path67" />
+    <path
+       fill="#ffffff"
+       stroke="#000000"
+       stroke-width="1.05833"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       d="M 18.168677,25.248926"
+       id="path68" />
+    <path
+       fill="#ffffff"
+       stroke="#000000"
+       stroke-width="1.05833"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       d="m 29.197297,21.351077 c 1.31525,-2.382571 0.44953,-5.3803 -1.93304,-6.69554 l -4.43019,-2.44502 -3.15568,1.88437 5.84888,3.228439 0.22595,6.495261 c 1.41023,-0.25374 2.69822,-1.115491 3.44408,-2.46751 z"
+       id="path69" />
+  </g>
+</svg>

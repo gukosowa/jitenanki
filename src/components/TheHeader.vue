@@ -1,9 +1,9 @@
 <template>
   <header
-    class="sticky top-0 bg-gray-400 dark:bg-gray-900 flex w-full h-12 items-center mb-2 drop-shadow-xl z-10 border-b border-gray-500 dark:border-gray-900 px-2"
+    class="sticky top-0 bg-gray-400 bg-primary dark:bg-gray-900 flex w-full h-12 items-center mb-2 drop-shadow-xl z-10 border-b border-gray-500 dark:border-gray-900 px-2"
   >
-    <img src="/icon-192x192.png" class="w-8 h-8" alt="logo" />
-    <div class="grow pl-2 overflow-ellipsis overflow-hidden text-gray-800 dark:text-gray-500">
+    <img src="/icons/p_only.svg" class="w-8 h-8" alt="logo" />
+    <div class="grow pl-2 overflow-ellipsis overflow-hidden dark:text-gray-500">
       {{ router.currentRoute.value.name }}
     </div>
     <nav class="flex">

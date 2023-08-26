@@ -6,11 +6,9 @@ root {
   --primary-color: #3498db;
 }
 
-input:focus {
+input:focus, textarea:focus, button:focus {
   outline: none !important;
-}
-textarea:focus {
-  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html, body {

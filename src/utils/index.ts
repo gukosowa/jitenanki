@@ -5,3 +5,16 @@ export function uuid() {
     return v.toString(16)
   })
 }
+
+export function formatDate(date: Date | string): string {
+  if (typeof date === 'string') {
+    date = new Date(date)
+  }
+
+  return `${date.getHours().toString().padStart(2, '0')}:${date
+    .getMinutes()
+    .toString()
+    .padStart(2, '0')} ${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, '0')}.${date.getFullYear()}`
+}
