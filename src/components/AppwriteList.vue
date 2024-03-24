@@ -146,7 +146,7 @@ async function loadList() {
   const list = await databases.listDocuments(
     databaseId,
     collections[props.collectionName],
-    appwriteListQuery ?? [Query.orderAsc('name')],
+    appwriteListQuery ?? [], // Query.orderAsc('name')
   )
   items.value = list.documents
   loading.finished(props.collectionName)

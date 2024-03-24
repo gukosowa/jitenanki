@@ -24,7 +24,7 @@ const { databases, databaseId, collections } = useDatabasesStore()
 
 const { client } = useClientStore()
 const loading = useLoadingStore()
-const items = ref([])
+const items = ref<Models.Document[]>([])
 
 const emit = defineEmits(['change'])
 
@@ -32,7 +32,7 @@ onMounted(() => {
   loadList()
 })
 
-let subscribe = null
+let subscribe: (() => void) | null = null
 onActivated(() => {
   loadList()
   subscribe = client.subscribe(collectionEvent(collections.tags), function () {
@@ -44,8 +44,8 @@ onDeactivated(() => {
   subscribe?.()
 })
 
-const listToggle = ref([])
-function toggle(id) {
+const listToggle = ref<string[]>([])
+function toggle(id: string) {
   if (!inToggle(id)) {
     listToggle.value = [...listToggle.value, id]
   } else {
@@ -55,14 +55,14 @@ function toggle(id) {
   emit('change', listToggle.value)
 }
 
-function inToggle(id) {
+function inToggle(id: string) {
   return listToggle.value.some((t) => t === id)
 }
 
 async function loadList() {
   loading.set('tags')
   const list = await databases.listDocuments(databaseId, collections['tags'], [
-    Query.orderAsc('name'),
+    //Query.orderAsc('name'),
   ])
   items.value = list.documents
   loading.finished('tags')

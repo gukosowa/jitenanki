@@ -11,7 +11,7 @@ import { Query } from 'appwrite'
 const { collections } = useDatabasesStore()
 
 provide('appwriteListQuery-' + collections.prompts, [
-  Query.orderDesc('favorite'),
-  Query.orderAsc('name'),
+  //Query.orderDesc('favorite'),
+  //Query.orderAsc('name'),
 ])
 </script>
