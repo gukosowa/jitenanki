@@ -23,6 +23,8 @@
       </div>
     </section>
 
+    <slot name="before-list"></slot>
+
     <section class="my-5">
       <AppwriteList :collectionName="collectionName" @clear-search="search = ''" :search="search">
         <template

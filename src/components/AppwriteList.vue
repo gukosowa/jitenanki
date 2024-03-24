@@ -78,6 +78,7 @@ const emit = defineEmits(['clearSearch'])
 
 let subscribe = null
 onActivated(() => {
+  loadList()
   subscribe = client.subscribe(collectionEvent(collections[props.collectionName]), function () {
     loadList()
   })
@@ -91,16 +92,32 @@ const appwriteListQuery = inject('appwriteListQuery-' + collections[props.collec
   | string[]
   | null
 
+const appwriteListQueryCustomFilter = inject(
+  'appwriteListQueryCustomFilter-' + collections[props.collectionName],
+  null,
+) as <T>(T) => T
+const appwriteListQueryCustomFilterItems = ref(
+  inject('appwriteListQueryCustomFilterItems-' + collections[props.collectionName], null) as any,
+)
+
 onMounted(() => {
   loadList()
 })
 
 const computedItems = computed(() => {
-  if (!props.search) {
+  if (!props.search?.trim()) {
     return items.value
   }
 
-  return items.value.filter((p) => p.name.toLowerCase().includes(props.search?.toLowerCase()))
+  let filteredItems = items.value
+
+  if (appwriteListQueryCustomFilter !== null) {
+    filteredItems = appwriteListQueryCustomFilter(filteredItems)
+  }
+
+  console.log({ items: items.value, filteredItems, appwriteListQueryCustomFilterItems })
+
+  return filteredItems.filter((p) => p.name.toLowerCase().includes(props.search?.toLowerCase()))
 })
 
 function onClearSearch() {
