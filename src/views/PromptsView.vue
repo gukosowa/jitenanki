@@ -39,7 +39,7 @@ const { collections } = useDatabasesStore()
 const { databases } = useDatabasesStore()
 const loading = useLoadingStore()
 
-const filteredTags = ref([])
+const filteredTags = ref<string[]>([])
 
 provide('appwriteListQuery-' + collections.prompts, [
   //Query.orderDesc('favorite'),
