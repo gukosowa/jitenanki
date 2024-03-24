@@ -1,9 +1,9 @@
 <template>
   <section>
-    <section class="flex gap-4">
-      <div class="grow flex gap-4">
+    <section class="flex flex-wrap gap-4">
+      <div class="flex-grow flex gap-4">
         <input-text
-          class="grow"
+          class="flex-grow"
           label="Search"
           clearable
           v-model="search"
@@ -12,12 +12,12 @@
       </div>
       <div class="flex gap-4">
         <input-text
-          class="grow"
+          class="flex-grow"
           :label="`Create ${collectionName}`"
           v-model="name"
           @keydown.enter="onCreate"
         />
-        <base-button :loading="loading.is(`create-${collectionName}`)" @click="onCreate"
+        <base-button class="" :loading="loading.is(`create-${collectionName}`)" @click="onCreate"
           >Create</base-button
         >
       </div>

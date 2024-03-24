@@ -1,5 +1,7 @@
 <template>
   <appwrite-list-view collection-name="tags"></appwrite-list-view>
+
+  <appwrite-list-view collection-name="links"></appwrite-list-view>
 </template>
 
 <script setup lang="ts">
