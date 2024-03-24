@@ -3,7 +3,7 @@ import { Client } from 'appwrite'
 
 const credentials = {
   local: {
-    endpoint: 'http://localhost:88/v1',
+    endpoint: window.location.origin + '/v1',
     project: '64d930ccc397a997a9d7',
   },
 
@@ -13,14 +13,14 @@ const credentials = {
   },
 }
 
-const useCredential: keyof typeof credentials = 'local'
+const useCredential: keyof typeof credentials = 'cloud'
 export const appwriteBackend = credentials[useCredential]
 
 export const useClientStore = defineStore('client', () => {
   const client = new Client()
   client
-    .setEndpoint(window.location.origin + '/v1')
-    // .setEndpoint(appwriteBackend.endpoint)
+    // .setEndpoint(window.location.origin + '/v1')
+    .setEndpoint(appwriteBackend.endpoint)
     .setProject(appwriteBackend.project)
     .setLocale('de_AT')
 

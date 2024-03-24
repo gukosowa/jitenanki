@@ -2,11 +2,17 @@
   <input-text
     label="Email"
     type="email"
+    autocomplete="new-username"
     v-model="email"
     class="mb-3"
     @keydown.enter="focusNextInput($event)"
   />
-  <input-text label="Password" v-model="password" @keydown.enter="onRegister" />
+  <input-text
+    autocomplete="new-password"
+    label="Password"
+    v-model="password"
+    @keydown.enter="onRegister"
+  />
 
   <base-button :loading="loading" class="mt-5" @click="onRegister">Sign up</base-button>
 </template>

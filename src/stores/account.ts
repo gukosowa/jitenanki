@@ -29,7 +29,7 @@ export const useAccountStore = defineStore('account', () => {
   }
 
   async function login(email: string, password: string) {
-    return account.value.createEmailSession(email, password).then(() => updateSession())
+    return account.value.createEmailPasswordSession(email, password).then(() => updateSession())
   }
 
   async function register(email: string, password: string) {

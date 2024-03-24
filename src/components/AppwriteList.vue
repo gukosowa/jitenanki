@@ -68,18 +68,19 @@ const { client } = useClientStore()
 const { databases, databaseId, collections } = useDatabasesStore()
 
 const loading = useLoadingStore()
-const items = ref([])
+const items = ref<Models.Document[]>([])
 
 const props = defineProps<{
   search?: string
-  collectionName: string
+  collectionName: keyof typeof collections
 }>()
 const emit = defineEmits(['clearSearch'])
 
-let subscribe = null
+let subscribe: (() => void) | null = null
 onActivated(() => {
   loadList()
-  subscribe = client.subscribe(collectionEvent(collections[props.collectionName]), function () {
+  const collectionEventName = collections[props.collectionName]
+  subscribe = client.subscribe(collectionEvent(collectionEventName), function () {
     loadList()
   })
 })
@@ -95,7 +96,8 @@ const appwriteListQuery = inject('appwriteListQuery-' + collections[props.collec
 const appwriteListQueryCustomFilter = inject(
   'appwriteListQueryCustomFilter-' + collections[props.collectionName],
   null,
-) as <T>(T) => T
+) as ((items: Models.Document[]) => Models.Document[]) | null
+
 const appwriteListQueryCustomFilterItems = ref(
   inject('appwriteListQueryCustomFilterItems-' + collections[props.collectionName], null) as any,
 )
@@ -106,16 +108,14 @@ onMounted(() => {
 
 const computedItems = computed(() => {
   if (!props.search?.trim()) {
-    return items.value
+    return items.value as any[]
   }
 
-  let filteredItems = items.value
+  let filteredItems = items.value as Models.Document[]
 
   if (appwriteListQueryCustomFilter !== null) {
-    filteredItems = appwriteListQueryCustomFilter(filteredItems)
+    filteredItems = appwriteListQueryCustomFilter(filteredItems) as Models.Document[]
   }
-
-  console.log({ items: items.value, filteredItems, appwriteListQueryCustomFilterItems })
 
   return filteredItems.filter((p) => p.name.toLowerCase().includes(props.search?.toLowerCase()))
 })
@@ -124,7 +124,7 @@ function onClearSearch() {
   emit('clearSearch')
 }
 
-async function onDuplicate(item) {
+async function onDuplicate(item: Record<string, any>) {
   loading.set('duplicate', item.$id)
   await databases.createDocument(
     databaseId,
@@ -135,7 +135,7 @@ async function onDuplicate(item) {
   loading.finished('duplicate', item.$id)
 }
 
-async function onDelete(documentId) {
+async function onDelete(documentId: string) {
   loading.set('delete', documentId)
   await databases.deleteDocument(databaseId, collections[props.collectionName], documentId)
   loading.finished('delete', documentId)
