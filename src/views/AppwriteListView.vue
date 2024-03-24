@@ -49,7 +49,7 @@ import { useLoadingStore } from '@/stores/loading'
 import AppwriteList from '@/components/AppwriteList.vue'
 
 const props = defineProps<{
-  collectionName: string
+  collectionName: keyof typeof collections
 }>()
 
 let name = ref('')

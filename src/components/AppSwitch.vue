@@ -9,16 +9,11 @@ import { useAppStore } from '@/stores/appStore'
 
 const appStore = useAppStore()
 
-const props = defineProps({
-  storageKey: {
-    type: String,
-    required: true,
-  },
-})
+const props = defineProps<{ storageKey: keyof typeof appStore }>()
 
 const emit = defineEmits(['update:modelValue'])
 
-const initialStoreValue = appStore[props.storageKey]
+const initialStoreValue = appStore[props.storageKey] as boolean
 const internalValue = ref(initialStoreValue !== undefined ? initialStoreValue : false)
 
 watch(internalValue, (newValue) => {

@@ -63,7 +63,7 @@ async function onLogout() {
 
     toast.add('Bye 👋')
   } catch (e) {
-    toast.error(e)
+    toast.error(e as string)
   }
 
   loadingLogout.value = false

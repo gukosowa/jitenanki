@@ -1,6 +1,6 @@
 <template>
   <appwrite-list-view collection-name="prompts">
-    <template #before-item="{ item }: { item: { favorite: boolean; $id: number } }">
+    <template #before-item="{ item }: { item: Models.Document }">
       <button-icon
         :icon="item.favorite ? IconStarFilled : IconStarEmpty"
         transparent
@@ -46,16 +46,18 @@ provide('appwriteListQuery-' + collections.prompts, [
   Query.orderAsc('name'),
 ])
 
-provide('appwriteListQueryCustomFilter-' + collections.prompts, (items) => {
+provide('appwriteListQueryCustomFilter-' + collections.prompts, (items: Models.Document[]) => {
   if (filteredTags.value.length === 0) {
     return items
   }
-  items = items.filter((item) => item.tags.some((tag) => filteredTags.value.includes(tag.$id)))
+  items = items.filter((item) =>
+    item.tags.some((tag: Models.Document) => filteredTags.value.includes(tag.$id)),
+  )
   return items
 })
 provide('appwriteListQueryCustomFilterItems-' + collections.prompts, filteredTags)
 
-async function onFavorite(documentId, currentFavorite) {
+async function onFavorite(documentId: string, currentFavorite: boolean) {
   loading.set('favorite', documentId)
   await databases.updateDocument(databaseId, collections.prompts, documentId, {
     favorite: !currentFavorite,
