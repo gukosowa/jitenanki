@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { Client, Databases, ID } from 'appwrite'
-import { useClientStore } from '@/stores/client'
+import { useClientStore } from '~/stores/client'
 import appwriteJson from 'root/appwrite.json'
 import { type Models } from 'appwrite/src/models'
 

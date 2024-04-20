@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import IconSpinner from '@/components/icons/IconSpinner.vue'
+import IconSpinner from '~/components/icons/IconSpinner.vue'
 import { computed, defineAsyncComponent, type Component } from 'vue'
 
 const props = defineProps<{

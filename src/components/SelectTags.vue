@@ -14,11 +14,11 @@
 
 <script setup lang="ts">
 import { Query } from 'appwrite'
-import { collectionEvent, useDatabasesStore } from '@/stores/database'
+import { collectionEvent, useDatabasesStore } from '~/stores/database'
 import { onMounted, ref, onActivated, onDeactivated } from 'vue'
 
-import { useLoadingStore } from '@/stores/loading'
-import { useClientStore } from '@/stores/client'
+import { useLoadingStore } from '~/stores/loading'
+import { useClientStore } from '~/stores/client'
 
 const { databases, databaseId, collections } = useDatabasesStore()
 

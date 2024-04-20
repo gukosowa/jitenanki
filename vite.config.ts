@@ -7,7 +7,16 @@ import { appwriteBackend } from './src/stores/client'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
+  build: { target: ['es2020'] },
+  optimizeDeps: {
+    exclude: ['@sqlite.org/sqlite-wasm'], // TODO remove once fixed https://github.com/vitejs/vite/issues/8427
+    esbuildOptions: { target: 'es2020' },
+  },
   server: {
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+    },
     proxy: {
       '/v1': {
         target: appwriteBackend.endpoint,
@@ -29,7 +38,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '~': fileURLToPath(new URL('./src', import.meta.url)),
       root: fileURLToPath(new URL('./', import.meta.url)),
     },
   },

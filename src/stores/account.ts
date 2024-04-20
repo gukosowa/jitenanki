@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { Account, Client, ID, type Models } from 'appwrite'
-import { useClientStore } from '@/stores/client'
+import { useClientStore } from '~/stores/client'
 
 export const useAccountStore = defineStore('account', () => {
   const client = useClientStore().client as Client

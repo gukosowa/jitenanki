@@ -2,14 +2,9 @@ import { defineStore } from 'pinia'
 import { Client } from 'appwrite'
 
 const credentials = {
-  local: {
-    endpoint: window.location.origin + '/v1',
-    project: '64d930ccc397a997a9d7',
-  },
-
   cloud: {
     endpoint: 'https://cloud.appwrite.io/v1',
-    project: '64c652976de88985cf9f',
+    project: '66196a8c1742a56aed1e',
   },
 }
 

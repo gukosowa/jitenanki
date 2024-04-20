@@ -36,15 +36,15 @@
 
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-import IconSignin from '@/components/icons/IconSignin.vue'
-import IconSignup from '@/components/icons/IconSignup.vue'
+import IconSignin from '~/components/icons/IconSignin.vue'
+import IconSignup from '~/components/icons/IconSignup.vue'
 import router from '../router'
-import IconLogout from '@/components/icons/IconLogout.vue'
-import { useAccountStore } from '@/stores/account'
+import IconLogout from '~/components/icons/IconLogout.vue'
+import { useAccountStore } from '~/stores/account'
 import { onMounted, ref } from 'vue'
-import DarkModeSwitch from '@/components/DarkModeSwitch.vue'
-import { useToastStore } from '@/stores/toastStore'
-import IconSpinner from '@/components/icons/IconSpinner.vue'
+import DarkModeSwitch from '~/components/DarkModeSwitch.vue'
+import { useToastStore } from '~/stores/toastStore'
+import IconSpinner from '~/components/icons/IconSpinner.vue'
 
 const accountStore = useAccountStore()
 const toast = useToastStore()

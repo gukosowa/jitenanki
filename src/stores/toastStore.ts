@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { uuid } from '@/utils'
+import { uuid } from '~/utils'
 
 interface Toast {
   id: string

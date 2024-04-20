@@ -3,5 +3,5 @@
 </template>
 
 <script setup lang="ts">
-import AppSwitch from '@/components/AppSwitch.vue'
+import AppSwitch from '~/components/AppSwitch.vue'
 </script>

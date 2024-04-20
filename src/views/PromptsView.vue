@@ -1,4 +1,8 @@
 <template>
+  <BaseForm
+    v-model="formData"
+    :inputs="[{ label: 'Name', type: 'text', placeholder: 'Name' }]"
+  ></BaseForm>
   <appwrite-list-view collection-name="prompts">
     <template #before-item="{ item }: { item: Models.Document }">
       <button-icon
@@ -26,20 +30,23 @@
 
 <script setup lang="ts">
 import { provide, ref } from 'vue'
-import { databaseId, useDatabasesStore } from '@/stores/database'
-import { useLoadingStore } from '@/stores/loading'
-import AppwriteListView from '@/views/AppwriteListView.vue'
-import IconStarFilled from '@/components/icons/IconStarFilled.vue'
-import IconStarEmpty from '@/components/icons/IconStarEmpty.vue'
-import ButtonIcon from '@/components/ButtonIcon.vue'
+import { databaseId, useDatabasesStore } from '~/stores/database'
+import { useLoadingStore } from '~/stores/loading'
+import AppwriteListView from '~/views/AppwriteListView.vue'
+import IconStarFilled from '~/components/icons/IconStarFilled.vue'
+import IconStarEmpty from '~/components/icons/IconStarEmpty.vue'
+import ButtonIcon from '~/components/ButtonIcon.vue'
+import BaseForm from '~/components/BaseForm.vue'
 import { Query, type Models } from 'appwrite'
-import SelectTags from '@/components/SelectTags.vue'
+import SelectTags from '~/components/SelectTags.vue'
 
 const { collections } = useDatabasesStore()
 const { databases } = useDatabasesStore()
 const loading = useLoadingStore()
 
 const filteredTags = ref<string[]>([])
+
+const formData = ref({ name: '' })
 
 provide('appwriteListQuery-' + collections.prompts, [
   //Query.orderDesc('favorite'),

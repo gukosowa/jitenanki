@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@sqlite.org/sqlite-wasm':
+    specifier: 3.45.2-build1
+    version: 3.45.2-build1
   appwrite:
     specifier: ^14.0.0
     version: 14.0.0
@@ -589,6 +592,11 @@ packages:
   /@sinclair/typebox@0.27.8:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
     dev: true
+
+  /@sqlite.org/sqlite-wasm@3.45.2-build1:
+    resolution: {integrity: sha512-TeQf8rNFQna8pg95IshtpXkhdMq1iNAXllCoNrhEn18660Hbal9yxKAYv+ZfC1kjfdEXMK6V0XanfX5OT5FyMw==}
+    hasBin: true
+    dev: false
 
   /@tsconfig/node18@18.2.3:
     resolution: {integrity: sha512-5GKTU9bfn4L37G9IdK8wcHfvyMijzw1uKNCd2Rs75V7fZK/l2OjGJ8Aa2myqNnESjekm/udpCnFH9qR9yPCtmw==}
