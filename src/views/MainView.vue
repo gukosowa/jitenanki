@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, toRaw } from 'vue'
 import { exec } from '~/utils/sqllite.ts'
 
 interface Translation {
@@ -94,14 +94,20 @@ interface ContentWithTranslation {
   translations?: Translation[]
 }
 
-interface FormationExampleWithTranslations {
+interface Formation {
   content: string
-  translations: Translation[]
+  examples?: ContentWithTranslation[]
 }
 
-interface FormationWithExamples {
+interface SentencePart {
   content: string
-  examples: FormationExampleWithTranslations[]
+  part_type: string
+}
+
+interface KeySentenceWithParts {
+  content: string
+  translations: Translation[]
+  parts: SentencePart[]
 }
 
 interface GrammarPoint {
@@ -110,10 +116,10 @@ interface GrammarPoint {
   romaji: string
   part_of_speech: string
   examples: ContentWithTranslation[]
-  keySentences: ContentWithTranslation[]
+  keySentences: KeySentenceWithParts[]
   relatedExpressions: ContentWithTranslation[]
   counterparts: Translation[]
-  formations: FormationWithExamples[]
+  formations: Formation[]
   notes?: ContentWithTranslation
 }
 
@@ -135,7 +141,10 @@ async function fetchGrammarPoints() {
            )) AS formations,
            json_group_array(json_object('content', ks.content, 'translations',
              (SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
-              FROM Translations tr WHERE tr.reference_id = ks.id AND tr.table_type = 'KeySentences'))) AS keySentences,
+              FROM Translations tr WHERE tr.reference_id = ks.id AND tr.table_type = 'KeySentences'),
+             'parts', (SELECT json_group_array(json_object('content', sp.content, 'part_type', sp.part_type))
+              FROM SentenceParts sp WHERE sp.sentence_id = ks.id)
+           )) AS keySentences,
            json_group_array(json_object('content', ex.content, 'translations',
              (SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
               FROM Translations tr WHERE tr.reference_id = ex.id AND tr.table_type = 'Examples'))) AS examples,
@@ -168,6 +177,7 @@ async function fetchGrammarPoints() {
 
 onMounted(async () => {
   grammarPoints.value = await fetchGrammarPoints()
+  console.log(toRaw(grammarPoints.value))
   loading.value = false
 })
 </script>

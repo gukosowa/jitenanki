@@ -2,6 +2,16 @@
   "files": [],
 
   "include": ["src/**/*", "src/**/*.vue", "**/*.d.ts"],
+
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"],
+      "root/*": ["./*"]
+    }
+  },
+
   "references": [
     {
       "path": "./tsconfig.node.json"
