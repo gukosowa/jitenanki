@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import { Client, Databases, ID } from 'appwrite'
-import { useClientStore } from '~/stores/client'
+import { useClientStore } from '~src/stores/client'
 import appwriteJson from 'root/appwrite.json'
-import { type Models } from 'appwrite/src/models'
+import type { Models } from 'appwrite'
 
 function idFromName(array: any[], name: string): string {
   return array.find((entry) => entry.name === name)?.$id as string

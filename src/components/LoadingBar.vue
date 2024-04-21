@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useLoadingStore } from '~/stores/loading'
+import { useLoadingStore } from '~src/stores/loading'
 import { computed } from 'vue'
 
 const loading = useLoadingStore()

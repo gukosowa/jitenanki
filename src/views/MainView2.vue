@@ -5,10 +5,10 @@
 </template>
 
 <script setup lang="ts">
-import InputText from '~/components/InputText.vue'
+import InputText from '~src/components/InputText.vue'
 import { onMounted, ref } from 'vue'
-import { useAccountStore } from '~/stores/account'
-import router from '~/router'
+import { useAccountStore } from '~src/stores/account'
+import router from '~src/router'
 
 let inputT = ref('')
 

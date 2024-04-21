@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAppStore } from '~/stores/appStore'
+import { useAppStore } from '~src/stores/appStore'
 
 const appStore = useAppStore()
 

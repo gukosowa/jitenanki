@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import BaseSwitch from './BaseSwitch.vue'
-import { useAppStore } from '~/stores/appStore'
+import { useAppStore } from '~src/stores/appStore'
 
 const appStore = useAppStore()
 

@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import { provide } from 'vue'
-import { useDatabasesStore } from '~/stores/database'
-import AppwriteListView from '~/views/AppwriteListView.vue'
+import { useDatabasesStore } from '~src/stores/database'
+import AppwriteListView from '~src/views/AppwriteListView.vue'
 import { Query } from 'appwrite'
 
 const { collections } = useDatabasesStore()

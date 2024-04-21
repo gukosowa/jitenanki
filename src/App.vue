@@ -15,13 +15,13 @@
 
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import TheHeader from '~/components/TheHeader.vue'
-import BaseToast from '~/components/BaseToast.vue'
+import TheHeader from '~src/components/TheHeader.vue'
+import BaseToast from '~src/components/BaseToast.vue'
 
 import { watch } from 'vue'
-import { useAppStore } from '~/stores/appStore'
-import LoadingBar from '~/components/LoadingBar.vue'
-import { useAccountStore } from '~/stores/account'
+import { useAppStore } from '~src/stores/appStore'
+import LoadingBar from '~src/components/LoadingBar.vue'
+import { useAccountStore } from '~src/stores/account'
 
 const appStore = useAppStore()
 const accountStore = useAccountStore()

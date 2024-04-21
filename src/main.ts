@@ -5,8 +5,8 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
-import { useAccountStore } from '~/stores/account'
-import { useClientStore } from '~/stores/client'
+import { useAccountStore } from '~src/stores/account'
+import { useClientStore } from '~src/stores/client'
 
 const app = createApp(App)
 

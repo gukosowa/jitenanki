@@ -40,13 +40,13 @@
 </template>
 
 <script setup lang="ts">
-import InputText from '~/components/InputText.vue'
+import InputText from '~src/components/InputText.vue'
 import { ref } from 'vue'
-import BaseButton from '~/components/BaseButton.vue'
-import { useDatabasesStore } from '~/stores/database'
-import { useToastStore } from '~/stores/toastStore'
-import { useLoadingStore } from '~/stores/loading'
-import AppwriteList from '~/components/AppwriteList.vue'
+import BaseButton from '~src/components/BaseButton.vue'
+import { useDatabasesStore } from '~src/stores/database'
+import { useToastStore } from '~src/stores/toastStore'
+import { useLoadingStore } from '~src/stores/loading'
+import AppwriteList from '~src/components/AppwriteList.vue'
 
 const props = defineProps<{
   collectionName: keyof typeof collections

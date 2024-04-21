@@ -1,185 +1,244 @@
 <template>
-  <div class="p-6">
-    <h1 class="text-3xl font-bold mb-6 text-gray-800">Japanese Grammar Points</h1>
-    <div v-if="loading" class="text-gray-500">Loading...</div>
-    <div v-else class="flex flex-col gap-6">
-      <div
-        v-for="grammarPoint in grammarPoints"
-        :key="grammarPoint.id"
-        class="flex flex-col p-4 rounded-lg shadow-md bg-white"
-      >
-        <h2 class="text-xl font-semibold mb-2">
-          {{ grammarPoint.content }} ({{ grammarPoint.romaji }})
-        </h2>
-        <div class="flex justify-between">
-          <p class="text-sm text-gray-700">
-            <strong>Part of Speech:</strong> {{ grammarPoint.part_of_speech }}
-          </p>
-          <div class="text-sm text-gray-700">
-            <strong class="tw-block">Counterparts:</strong>
-            <span v-for="(counterpart, idx) in grammarPoint.counterparts" :key="idx">
-              {{ counterpart.language_code.toUpperCase() }}: {{ counterpart.content }}<br />
-            </span>
-          </div>
-        </div>
-        <div>
-          <strong>Related Expressions:</strong>
-          <div
-            v-for="(expression, index) in grammarPoint.relatedExpressions"
-            :key="index"
-            class="ml-4"
-          >
-            {{ expression.content }}
-          </div>
-        </div>
-        <div>
-          <strong>Key Sentences:</strong>
-          <div v-for="(sentence, index) in grammarPoint.keySentences" :key="index" class="ml-4">
-            {{ sentence.content }}
-            <div v-if="sentence.translations" class="ml-4">
-              <span v-for="(translation, idx) in sentence.translations" :key="idx">
-                {{ translation.language_code.toUpperCase() }}: {{ translation.content }}<br />
-              </span>
-            </div>
-          </div>
-        </div>
-        <div>
-          <strong>Formations:</strong>
-          <div v-for="(formation, fIndex) in grammarPoint.formations" :key="fIndex" class="ml-4">
-            {{ formation.content }}
-            <div v-for="(example, eIndex) in formation.examples" :key="eIndex">
-              {{ example.content }}
-              <div class="ml-4">
-                <span v-for="(translation, tIndex) in example.translations" :key="tIndex">
-                  {{ translation.language_code.toUpperCase() }}: {{ translation.content }}<br />
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <strong>Examples:</strong>
-          <div v-for="(example, index) in grammarPoint.examples" :key="index" class="ml-4">
-            {{ example.content }}
-            <div v-if="example.translations" class="ml-4">
-              <span v-for="(translation, idx) in example.translations" :key="idx">
-                {{ translation.language_code.toUpperCase() }}: {{ translation.content }}<br />
-              </span>
-            </div>
-          </div>
-        </div>
-        <div v-if="grammarPoint.notes">
-          <strong>Notes:</strong>
-          <div class="ml-4">
-            <span v-for="(translation, index) in grammarPoint.notes.translations" :key="index">
-              {{ translation.language_code.toUpperCase() }}: {{ translation.content }}<br />
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div class="container">
+    <div id="text" class="relative" ref="textContainer"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, toRaw } from 'vue'
-import { exec } from '~/utils/sqllite.ts'
+import { ref, onMounted } from 'vue'
 
-interface Translation {
-  language_code: string
-  content: string
+const text = ref('田口さんは中国語を話すことが出来る')
+
+interface Part {
+  regex: RegExp
+  label: string
+  group?: number
+  dotted?: number
+  bold?: boolean
 }
 
-interface ContentWithTranslation {
-  content: string
-  translations?: Translation[]
-}
+const parts: Part[] = [
+  { regex: /(田口さんは)(中国語)を話すことが出来る/g, label: 'Subject', group: 0, dotted: 4 },
+  { regex: /(田口さんは)(中国語)を話すことが出来る/g, label: 'Subject', group: 1, dotted: 4 },
+  { regex: /中国語を話すことが/g, label: 'Topic' },
+  { regex: /話す/g, label: 'Verb', bold: true },
+  { regex: /ことが/g, label: 'Helper', dotted: 2 },
+  { regex: /出来る/g, label: 'last Verb' },
+]
 
-interface Formation {
-  content: string
-  examples?: ContentWithTranslation[]
-}
+const colors = ['blue', 'green', 'orange', 'purple', 'brown']
 
-interface SentencePart {
-  content: string
-  part_type: string
-}
+const textContainer = ref<HTMLElement | null>(null)
 
-interface KeySentenceWithParts {
-  content: string
-  translations: Translation[]
-  parts: SentencePart[]
-}
-
-interface GrammarPoint {
-  id: number
-  content: string
-  romaji: string
-  part_of_speech: string
-  examples: ContentWithTranslation[]
-  keySentences: KeySentenceWithParts[]
-  relatedExpressions: ContentWithTranslation[]
-  counterparts: Translation[]
-  formations: Formation[]
-  notes?: ContentWithTranslation
-}
-
-const grammarPoints = ref<GrammarPoint[]>([])
-const loading = ref(true)
-
-async function fetchGrammarPoints() {
-  const data = await exec(`
-    SELECT gp.id, gp.content, gp.romaji, gp.part_of_speech,
-           (SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
-            FROM Translations tr WHERE tr.reference_id = cp.id AND tr.table_type = 'Counterparts') AS counterparts,
-           json_group_array(json_object('content', rgp.content)) AS relatedExpressions,
-           json_group_array(json_object(
-             'content', f.content,
-             'examples', (SELECT json_group_array(json_object('content', fe.content, 'translations',
-               (SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
-                FROM Translations tr WHERE tr.reference_id = fe.id AND tr.table_type = 'FormationExamples')))
-              FROM FormationExamples fe WHERE fe.formation_id = f.id)
-           )) AS formations,
-           json_group_array(json_object('content', ks.content, 'translations',
-             (SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
-              FROM Translations tr WHERE tr.reference_id = ks.id AND tr.table_type = 'KeySentences'),
-             'parts', (SELECT json_group_array(json_object('content', sp.content, 'part_type', sp.part_type))
-              FROM SentenceParts sp WHERE sp.sentence_id = ks.id)
-           )) AS keySentences,
-           json_group_array(json_object('content', ex.content, 'translations',
-             (SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
-              FROM Translations tr WHERE tr.reference_id = ex.id AND tr.table_type = 'Examples'))) AS examples,
-           (SELECT json_object('content', nt.translation, 'translations',
-             (SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
-              FROM Translations tr WHERE tr.reference_id = gp.id AND tr.table_type = 'Notes'))
-             FROM Translations nt WHERE nt.reference_id = gp.id AND nt.table_type = 'Notes' LIMIT 1) AS notes
-    FROM GrammarPoints gp
-    LEFT JOIN Counterparts cp ON gp.id = cp.grammar_point_id
-    LEFT JOIN RelatedExpressions re ON gp.id = re.grammar_point_id
-    LEFT JOIN GrammarPoints rgp ON re.related_grammar_point_id = rgp.id
-    LEFT JOIN Formations f ON gp.id = f.grammar_point_id
-    LEFT JOIN KeySentences ks ON gp.id = ks.grammar_point_id
-    LEFT JOIN Examples ex ON gp.id = ex.grammar_point_id
-    GROUP BY gp.id
-  `)
-  return data.map((item: any) => ({
-    id: item.id,
-    content: item.content,
-    romaji: item.romaji,
-    part_of_speech: item.part_of_speech,
-    counterparts: JSON.parse(item.counterparts),
-    relatedExpressions: JSON.parse(item.relatedExpressions),
-    formations: JSON.parse(item.formations),
-    keySentences: JSON.parse(item.keySentences),
-    examples: JSON.parse(item.examples),
-    notes: item.notes ? JSON.parse(item.notes) : undefined,
-  }))
-}
-
-onMounted(async () => {
-  grammarPoints.value = await fetchGrammarPoints()
-  console.log(toRaw(grammarPoints.value))
-  loading.value = false
+onMounted(() => {
+  if (textContainer.value) {
+    processText(textContainer.value, text.value, parts)
+  }
 })
+
+interface Match {
+  text: string
+  index: number
+  length: number
+  depth: number
+  color: string
+  bold?: boolean
+  dotted?: number
+  containsCount?: number
+}
+
+function processText(container: HTMLElement, text: string, parts: Part[]) {
+  let matches: Match[] = []
+  let splitIndexes = new Set<number>()
+
+  // Find regex matches and identify unique indices
+  parts.forEach((part, colorIndex) => {
+    const regexMatches = [...text.matchAll(part.regex)]
+    regexMatches.forEach((match) => {
+      const matchText = part.group ? match[part.group] : match[0]
+      const matchStart = part.group ? match.index + match[0].indexOf(matchText) : match.index // Adjust start index for specific group
+      matches.push({
+        text: part.label,
+        index: matchStart,
+        length: matchText.length,
+        depth: 0,
+        color: colors[colorIndex % colors.length],
+        bold: part.bold,
+        dotted: part.dotted,
+      })
+      splitIndexes.add(matchStart)
+      splitIndexes.add(matchStart + matchText.length)
+    })
+  })
+
+  // Initialize matches with a default depth of 0
+  matches.forEach((match) => {
+    match.depth = 0
+    match.containsCount = 0 // Keep track of how many matches each match contains
+  })
+
+  // Calculate the containsCount for each match
+  matches.forEach((current, currentIndex, array) => {
+    array.forEach((other, otherIndex) => {
+      if (currentIndex !== otherIndex) {
+        // If 'current' contains 'other', increase the containsCount
+        if (
+          current.index <= other.index &&
+          current.index + current.length >= other.index + other.length
+        ) {
+          current.containsCount! += 1
+        }
+      }
+    })
+  })
+
+  // Assign depths based on the containsCount
+  matches.forEach((match) => {
+    // The more matches a match contains, the higher its depth should be
+    match.depth = match.containsCount!
+  })
+
+  // Normalize the depth values
+  let uniqueDepths = [...new Set(matches.map((match) => match.depth))] // Get unique depth values
+  uniqueDepths.sort((a, b) => a - b) // Sort the unique depth values
+
+  // Create a depth mapping from old depth to new normalized depth
+  let depthMapping: Record<number, number> = {}
+  uniqueDepths.forEach((depth, index) => {
+    depthMapping[depth] = index // Map each unique depth to an index starting from 0
+  })
+
+  // Apply the new normalized depth to each match
+  matches.forEach((match) => {
+    match.depth = depthMapping[match.depth]
+  })
+
+  // Sort by index and then by normalized depth for rendering
+  matches.sort((a, b) => a.index - b.index || a.depth - b.depth)
+
+  // Create text segments for displaying based on unique indices
+  let sortedIndexes = Array.from(splitIndexes).sort((a, b) => a - b)
+  let segments = []
+  let lastIndex = 0
+
+  sortedIndexes.forEach((index) => {
+    if (lastIndex !== index) {
+      segments.push({ text: text.substring(lastIndex, index), index: lastIndex, end: index })
+    }
+    lastIndex = index
+  })
+  segments.push({ text: text.substring(lastIndex), index: lastIndex, end: text.length })
+
+  let segmentElements: { element: HTMLElement; index: number; end: number }[] = []
+
+  segments.forEach((segment) => {
+    const span = document.createElement('span')
+    span.className = 'text-segment'
+    span.textContent = segment.text
+    container.appendChild(span)
+    segmentElements.push({ element: span, index: segment.index, end: segment.end })
+
+    matches.forEach((match) => {
+      if (
+        match.bold &&
+        match.index === segment.index &&
+        match.index + match.length === segment.end
+      ) {
+        span.classList.add('bold')
+      }
+
+      if (
+        match.dotted &&
+        match.index === segment.index &&
+        match.index + match.length === segment.end
+      ) {
+        const beforeDot = span.textContent!.substring(0, match.dotted)
+        const afterDot = span.textContent!.substring(match.dotted)
+        span.innerHTML = beforeDot + '<span class="dotted"></span>' + afterDot
+      }
+    })
+  })
+
+  let maxYDepth = 0
+
+  // Create and position highlight elements
+  matches.forEach((match) => {
+    const highlightSpan = document.createElement('span')
+    highlightSpan.classList.add('highlight', `color-${match.color}`)
+    highlightSpan.setAttribute('data-group', match.text)
+
+    // Calculate width and positioning for each highlight based on matching segments
+    const matchSegment = segmentElements.find((seg) => seg.index === match.index)
+    const endSegment = segmentElements.find((seg) => seg.end === match.index + match.length)
+    if (matchSegment && endSegment) {
+      const width =
+        endSegment.element.offsetLeft +
+        endSegment.element.offsetWidth -
+        matchSegment.element.offsetLeft -
+        5 // Adjust width to add gaps
+      highlightSpan.style.width = `${width + 14}px` // Reduce width by 2px to add a gap between highlights
+      highlightSpan.style.height = `${22 + match.depth * 25}px` // Height increases with depth
+      highlightSpan.style.top = `${matchSegment.element.offsetTop - 10 - match.depth * 25}px` // Move up based on depth
+      highlightSpan.style.left = `${matchSegment.element.offsetLeft - 5}px` // Shift left slightly to center the highlight after width adjustment
+      container.appendChild(highlightSpan)
+      maxYDepth = Math.max(maxYDepth, matchSegment.element.offsetTop + 15 + match.depth * 25)
+    }
+  })
+  container.style.marginTop = `${maxYDepth + 10}px` // Ensuring no overflow
+}
 </script>
 
-<style scoped></style>
+<style>
+body {
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+}
+.container {
+  position: relative;
+  white-space: nowrap;
+  padding-top: 5px;
+}
+.text-segment {
+  display: inline-block;
+  margin-right: 10px;
+  font-size: 1.4rem;
+}
+.highlight {
+  position: absolute;
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 2px 2px 0 2px;
+  text-align: center;
+  padding: 10px 0;
+}
+.highlight::after {
+  content: attr(data-group);
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  font-size: 0.6rem;
+  transform: translateX(-50%);
+}
+.color-blue {
+  border-color: blue;
+}
+.color-green {
+  border-color: green;
+}
+.color-orange {
+  border-color: orange;
+}
+.color-purple {
+  border-color: purple;
+}
+.color-brown {
+  border-color: brown;
+}
+.bold {
+  font-weight: bold;
+}
+.dotted {
+  border-left: 1px dotted black;
+  margin: 0 2px;
+}
+</style>

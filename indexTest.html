@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Depth Adjusted Highlighting</title>
+    <style>
+      body {
+        font-size: 16px;
+        font-family: Arial, sans-serif;
+        margin-top: 30px;
+      }
+      .container {
+        position: relative;
+        white-space: nowrap;
+        padding-top: 5px;
+      }
+      #text {
+        position: relative;
+        padding: 0;
+        margin: 0;
+      }
+      .text-segment {
+        display: inline-block;
+        margin-right: 10px; /* Space between segments for better highlight separation */
+      }
+      .highlight {
+        position: absolute;
+        box-sizing: border-box;
+        border-style: solid;
+        border-width: 2px 2px 0 2px;
+        text-align: center;
+        padding: 10px 0;
+      }
+      .highlight::after {
+        content: attr(data-group); /* Display group name above highlight */
+        position: absolute;
+        top: -14px;
+        left: 50%;
+        font-size: 0.6rem;
+        transform: translateX(-50%); /* Center the label above the highlight */
+      }
+      .color-blue {
+        border-color: blue;
+      }
+      .color-green {
+        border-color: green;
+      }
+      .color-orange {
+        border-color: orange;
+      }
+      .color-purple {
+        border-color: purple;
+      }
+      .color-brown {
+        border-color: brown;
+      }
+      .bold {
+        font-weight: bold;
+      }
+      .dotted {
+        border-left: 1px dotted black;
+        margin: 0 2px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div id="text"></div>
+    </div>
+
+    <script>
+      const text = '田口さんは中国語を話すことが出来る'
+      const textContainer = document.getElementById('text')
+
+      const parts = [
+        { regex: /(田口さんは)(中国語)を話すことが出来る/g, label: 'Subject', group: 1, dotted: 4 },
+        { regex: /中国語を話すことが/g, label: 'Topic' },
+        { regex: /話す/g, label: 'Verb', bold: true },
+        { regex: /ことが/g, label: 'Helper', dotted: 2 },
+        // { regex: /田口さん/g, label: 'we' },
+        { regex: /出来る/g, label: 'last Verb' },
+      ]
+      const colors = ['blue', 'green', 'orange', 'purple', 'brown']
+
+      function processText(container, text, parts) {
+        let matches = []
+        let splitIndexes = new Set()
+
+        // Find regex matches and identify unique indices
+        parts.forEach((part, colorIndex) => {
+          const regexMatches = [...text.matchAll(part.regex)]
+          regexMatches.forEach((match) => {
+            const matchText = part.group ? match[part.group] : match[0]
+            const matchStart = part.group ? match.index + match[0].indexOf(matchText) : match.index // Adjust start index for specific group
+            matches.push({
+              text: part.label,
+              index: matchStart,
+              length: matchText.length,
+              depth: 0,
+              color: colors[colorIndex % colors.length],
+              bold: part.bold,
+              dotted: part.dotted,
+            })
+            splitIndexes.add(matchStart)
+            splitIndexes.add(matchStart + matchText.length)
+          })
+        })
+
+        // Initialize matches with a default depth of 0
+        matches.forEach((match) => {
+          match.depth = 0
+          match.containsCount = 0 // Keep track of how many matches each match contains
+        })
+
+        // Calculate the containsCount for each match
+        matches.forEach((current, currentIndex, array) => {
+          array.forEach((other, otherIndex) => {
+            if (currentIndex !== otherIndex) {
+              // If 'current' contains 'other', increase the containsCount
+              if (
+                current.index <= other.index &&
+                current.index + current.length >= other.index + other.length
+              ) {
+                current.containsCount += 1
+              }
+            }
+          })
+        })
+
+        // Assign depths based on the containsCount
+        matches.forEach((match) => {
+          // The more matches a match contains, the higher its depth should be
+          match.depth = match.containsCount
+        })
+
+        // Normalize the depth values
+        let uniqueDepths = [...new Set(matches.map((match) => match.depth))] // Get unique depth values
+        uniqueDepths.sort((a, b) => a - b) // Sort the unique depth values
+
+        // Create a depth mapping from old depth to new normalized depth
+        let depthMapping = {}
+        uniqueDepths.forEach((depth, index) => {
+          depthMapping[depth] = index // Map each unique depth to an index starting from 0
+        })
+
+        // Apply the new normalized depth to each match
+        matches.forEach((match) => {
+          match.depth = depthMapping[match.depth]
+        })
+
+        // Sort by index and then by normalized depth for rendering
+        matches.sort((a, b) => a.index - b.index || a.depth - b.depth)
+
+        // Create text segments for displaying based on unique indices
+        let sortedIndexes = Array.from(splitIndexes).sort((a, b) => a - b)
+        let segments = []
+        let lastIndex = 0
+
+        sortedIndexes.forEach((index) => {
+          if (lastIndex !== index) {
+            segments.push({ text: text.substring(lastIndex, index), index: lastIndex, end: index })
+          }
+          lastIndex = index
+        })
+        segments.push({ text: text.substring(lastIndex), index: lastIndex, end: text.length })
+
+        let segmentElements = []
+
+        segments.forEach((segment) => {
+          const span = document.createElement('span')
+          span.className = 'text-segment'
+          span.textContent = segment.text
+          container.appendChild(span)
+          segmentElements.push({ element: span, index: segment.index, end: segment.end })
+
+          matches.forEach((match) => {
+            if (
+              match.bold &&
+              match.index === segment.index &&
+              match.index + match.length === segment.end
+            ) {
+              span.classList.add('bold')
+            }
+
+            if (
+              match.dotted &&
+              match.index === segment.index &&
+              match.index + match.length === segment.end
+            ) {
+              const beforeDot = span.textContent.substring(0, match.dotted)
+              const afterDot = span.textContent.substring(match.dotted)
+              span.innerHTML = beforeDot + '<span class="dotted"></span>' + afterDot
+            }
+          })
+        })
+
+        let maxYDepth = 0
+
+        // Create and position highlight elements
+        matches.forEach((match) => {
+          const highlightSpan = document.createElement('span')
+          highlightSpan.classList.add('highlight', `color-${match.color}`)
+          highlightSpan.setAttribute('data-group', match.text)
+
+          // Calculate width and positioning for each highlight based on matching segments
+          const matchSegment = segmentElements.find((seg) => seg.index === match.index)
+          const endSegment = segmentElements.find((seg) => seg.end === match.index + match.length)
+          if (matchSegment && endSegment) {
+            const width =
+              endSegment.element.offsetLeft +
+              endSegment.element.offsetWidth -
+              matchSegment.element.offsetLeft -
+              5 // Adjust width to add gaps
+            highlightSpan.style.width = `${width + 14}px` // Reduce width by 2px to add a gap between highlights
+            highlightSpan.style.height = `${22 + match.depth * 25}px` // Height increases with depth
+            highlightSpan.style.top = `${matchSegment.element.offsetTop - 15 - match.depth * 25}px` // Move up based on depth
+            highlightSpan.style.left = `${matchSegment.element.offsetLeft - 5}px` // Shift left slightly to center the highlight after width adjustment
+            container.appendChild(highlightSpan)
+            maxYDepth = Math.max(maxYDepth, 20 + match.depth * 20)
+          }
+        })
+
+        // Adjust container top padding to accommodate all highlight depths
+        document.body.style.paddingTop = `${maxYDepth + 30}px` // Ensuring no overflow
+      }
+
+      processText(textContainer, text, parts)
+    </script>
+  </body>
+</html>

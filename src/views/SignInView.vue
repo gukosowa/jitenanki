@@ -19,17 +19,17 @@
 </template>
 
 <script setup lang="ts">
-import InputText from '~/components/InputText.vue'
+import InputText from '~src/components/InputText.vue'
 import { ref } from 'vue'
-import BaseButton from '~/components/BaseButton.vue'
+import BaseButton from '~src/components/BaseButton.vue'
 
 let email = ref('markus@test.com')
 let password = ref('12345678')
 
-import { useAccountStore } from '~/stores/account'
-import router from '~/router'
-import { useToastStore } from '~/stores/toastStore'
-import { blurAll, focusNextInput } from '~/utils/dom'
+import { useAccountStore } from '~src/stores/account'
+import router from '~src/router'
+import { useToastStore } from '~src/stores/toastStore'
+import { blurAll, focusNextInput } from '~src/utils/dom'
 
 const account = useAccountStore()
 const toast = useToastStore()

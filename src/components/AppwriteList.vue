@@ -53,16 +53,16 @@
 </template>
 
 <script setup lang="ts">
-import { useClientStore } from '~/stores/client'
-import { collectionEvent, removeKeysWithDollarSign, useDatabasesStore } from '~/stores/database'
+import { useClientStore } from '~src/stores/client'
+import { collectionEvent, removeKeysWithDollarSign, useDatabasesStore } from '~src/stores/database'
 import { computed, inject, onActivated, onDeactivated, onMounted, ref } from 'vue'
-import IconSpinner from '~/components/icons/IconSpinner.vue'
-import ButtonIcon from '~/components/ButtonIcon.vue'
+import IconSpinner from '~src/components/icons/IconSpinner.vue'
+import ButtonIcon from '~src/components/ButtonIcon.vue'
 
-import { useLoadingStore } from '~/stores/loading'
+import { useLoadingStore } from '~src/stores/loading'
 import { Query } from 'appwrite'
-import { formatDate } from '~/utils'
-import BaseButton from '~/components/BaseButton.vue'
+import { formatDate } from '~src/utils'
+import BaseButton from '~src/components/BaseButton.vue'
 
 const { client } = useClientStore()
 const { databases, databaseId, collections } = useDatabasesStore()

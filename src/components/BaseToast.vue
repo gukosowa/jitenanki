@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToastStore } from '~/stores/toastStore'
+import { useToastStore } from '~src/stores/toastStore'
 
 const store = useToastStore()
 const toasts = store.$state.toasts

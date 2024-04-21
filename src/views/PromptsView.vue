@@ -30,15 +30,15 @@
 
 <script setup lang="ts">
 import { provide, ref } from 'vue'
-import { databaseId, useDatabasesStore } from '~/stores/database'
-import { useLoadingStore } from '~/stores/loading'
-import AppwriteListView from '~/views/AppwriteListView.vue'
-import IconStarFilled from '~/components/icons/IconStarFilled.vue'
-import IconStarEmpty from '~/components/icons/IconStarEmpty.vue'
-import ButtonIcon from '~/components/ButtonIcon.vue'
-import BaseForm from '~/components/BaseForm.vue'
+import { databaseId, useDatabasesStore } from '~src/stores/database'
+import { useLoadingStore } from '~src/stores/loading'
+import AppwriteListView from '~src/views/AppwriteListView.vue'
+import IconStarFilled from '~src/components/icons/IconStarFilled.vue'
+import IconStarEmpty from '~src/components/icons/IconStarEmpty.vue'
+import ButtonIcon from '~src/components/ButtonIcon.vue'
+import BaseForm from '~src/components/BaseForm.vue'
 import { Query, type Models } from 'appwrite'
-import SelectTags from '~/components/SelectTags.vue'
+import SelectTags from '~src/components/SelectTags.vue'
 
 const { collections } = useDatabasesStore()
 const { databases } = useDatabasesStore()
