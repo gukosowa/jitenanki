@@ -139,10 +139,13 @@ async function fetchGrammarPoints() {
                 FROM Translations tr WHERE tr.reference_id = fe.id AND tr.table_type = 'FormationExamples')))
               FROM FormationExamples fe WHERE fe.formation_id = f.id)
            )) AS formations,
-           json_group_array(json_object('content', ks.content, 'translations',
+           json_group_array(json_object(
+             'content', ks.content, 'translations',
              (SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
               FROM Translations tr WHERE tr.reference_id = ks.id AND tr.table_type = 'KeySentences'),
-             'parts', (SELECT json_group_array(json_object('content', sp.content, 'part_type', sp.part_type))
+             'parts', (SELECT json_group_array(json_object(
+               'regex', sp.regex, 'label', sp.label, 'part_type', sp.part_type,
+               'group_id', sp."group", 'dotted', sp.dotted, 'bold', sp.bold))
               FROM SentenceParts sp WHERE sp.sentence_id = ks.id)
            )) AS keySentences,
            json_group_array(json_object('content', ex.content, 'translations',

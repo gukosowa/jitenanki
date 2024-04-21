@@ -18,7 +18,7 @@ INSERT INTO RelatedExpressions (grammar_point_id, type) VALUES (1, 'semantically
 INSERT INTO KeySentences (grammar_point_id, japanese_sentence) VALUES (1, '彼は学生です。');  -- He is a student.
 
 -- Insert sentence parts
-INSERT INTO SentenceParts (sentence_id, part_type, content) VALUES (1, 'topic', '彼は'); -- He (as the topic)
+INSERT INTO SentenceParts (sentence_id, part_type, label) VALUES (1, 'topic', '彼は'); -- He (as the topic)
 
 -- Insert formation examples
 INSERT INTO Formations (grammar_point_id) VALUES (1);

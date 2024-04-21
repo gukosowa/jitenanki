@@ -2,6 +2,7 @@
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "exclude": ["dist", "node_modules"],
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "paths": {
       "~src/*": ["./src/*"],
       "root/*": ["./*"]

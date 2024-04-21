@@ -2,10 +2,13 @@
   <div class="container">
     <div id="text" class="relative" ref="textContainer"></div>
   </div>
+
+  <MainViewBackup />
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import MainViewBackup from '~src/views/MainViewBackup.vue'
 
 const text = ref('田口さんは中国語を話すことが出来る')
 
