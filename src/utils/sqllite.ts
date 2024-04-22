@@ -5,7 +5,7 @@ const worker = new Worker(new URL('./sqlWorker.ts', import.meta.url), { type: 'm
 let isReady = false
 
 // A queue to hold SQL commands until the worker is ready to process them.
-const commandQueue = []
+const commandQueue: { type: string; sql: string; params: any[]; id: string }[] = []
 
 // A Map to store the resolve and reject functions for each command, indexed by a unique command ID.
 const callbacks = new Map()

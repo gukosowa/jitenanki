@@ -1,7 +1,9 @@
 <template>
   <div class="p-6">
-    <h1 class="text-3xl font-bold mb-6 text-gray-800">Japanese Grammar Points</h1>
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">BunpoNavi - Your grammar guide</h1>
+
     <div v-if="loading" class="text-gray-500">Loading...</div>
+
     <div v-else class="flex flex-col gap-6">
       <div
         v-for="grammarPoint in grammarPoints"
@@ -78,9 +80,12 @@
         <div v-if="grammarPoint.notes">
           <strong>Notes:</strong>
           <div class="ml-4">
-            <span v-for="(translation, index) in grammarPoint.notes.translations" :key="index">
-              {{ translation.language_code.toUpperCase() }}: {{ translation.content }}<br />
-            </span>
+            <div v-for="(node, index) in grammarPoint.notes" :key="index">
+              {{ node.language_code.toUpperCase() }}:
+              <div class="whitespace-pre-wrap">
+                <VueMarkdown :source="node.content" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -89,7 +94,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, toRaw, nextTick, reactive } from 'vue'
+import VueMarkdown from 'vue-markdown-render'
+import { ref, onMounted, toRaw, nextTick } from 'vue'
 import { exec } from '~src/utils/sqllite.ts'
 
 interface Translation {
@@ -135,7 +141,7 @@ interface GrammarPoint {
   relatedExpressions: ContentWithTranslation[]
   counterparts: Translation[]
   formations: Formation[]
-  notes?: ContentWithTranslation
+  notes?: Translation[]
 }
 
 const grammarPoints = ref<GrammarPoint[]>([])
@@ -143,41 +149,83 @@ const loading = ref(true)
 
 async function fetchGrammarPoints() {
   const data = await exec(`
-    SELECT gp.id, gp.content, gp.romaji, gp.part_of_speech,
-           (SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
-            FROM Translations tr WHERE tr.reference_id = cp.id AND tr.table_type = 'Counterparts') AS counterparts,
-           json_group_array(json_object('content', rgp.content)) AS relatedExpressions,
-           json_group_array(json_object(
-             'content', f.content,
-             'examples', (SELECT json_group_array(json_object('content', fe.content, 'translations',
-               (SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
-                FROM Translations tr WHERE tr.reference_id = fe.id AND tr.table_type = 'FormationExamples')))
-              FROM FormationExamples fe WHERE fe.formation_id = f.id)
-           )) AS formations,
-           json_group_array(json_object(
-             'id', ks.id,
-             'content', ks.content, 'translations',
-             (SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
-              FROM Translations tr WHERE tr.reference_id = ks.id AND tr.table_type = 'KeySentences'),
-             'parts', (SELECT json_group_array(json_object(
-               'regex', sp.regex, 'label', sp.label, 'part_type', sp.part_type,
-               'group_id', sp."group", 'dotted', sp.dotted, 'bold', sp.bold))
-              FROM SentenceParts sp WHERE sp.sentence_id = ks.id)
-           )) AS keySentences,
-           json_group_array(json_object('content', ex.content, 'translations',
-             (SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
-              FROM Translations tr WHERE tr.reference_id = ex.id AND tr.table_type = 'Examples'))) AS examples,
-           (SELECT json_object('content', nt.translation, 'translations',
-             (SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
-              FROM Translations tr WHERE tr.reference_id = gp.id AND tr.table_type = 'Notes'))
-             FROM Translations nt WHERE nt.reference_id = gp.id AND nt.table_type = 'Notes' LIMIT 1) AS notes
+    SELECT
+      gp.id,
+      gp.content,
+      gp.romaji,
+      gp.part_of_speech,
+      (
+        SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
+        FROM Translations tr
+        WHERE tr.reference_id = gp.id AND tr.table_type = 'GrammarPoints'
+      ) AS translations,
+      (
+        SELECT json_group_array(json_object('content', rgp.content, 'translations',
+          (
+            SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
+            FROM Translations tr
+            WHERE tr.reference_id = rgp.id AND tr.table_type = 'GrammarPoints'
+          )
+        ))
+        FROM RelatedExpressions re
+        JOIN GrammarPoints rgp ON re.related_grammar_point_id = rgp.id
+        WHERE re.grammar_point_id = gp.id
+      ) AS relatedExpressions,
+      (
+        SELECT json_group_array(json_object(
+          'content', f.content,
+          'examples', (
+            SELECT json_group_array(json_object('content', fe.content, 'translations',
+              (
+                SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
+                FROM Translations tr WHERE tr.reference_id = fe.id AND tr.table_type = 'FormationExamples'
+              )
+            ))
+            FROM FormationExamples fe WHERE fe.formation_id = f.id
+          )
+        ))
+        FROM Formations f
+        WHERE f.grammar_point_id = gp.id
+      ) AS formations,
+      (
+        SELECT json_group_array(json_object(
+          'id', ks.id,
+          'content', ks.content,
+          'translations', (
+            SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
+            FROM Translations tr WHERE tr.reference_id = ks.id AND tr.table_type = 'KeySentences'
+          ),
+          'parts', (
+            SELECT json_group_array(json_object(
+              'regex', sp.regex, 'label', sp.label, 'part_type', sp.part_type,
+              'group_id', sp."group", 'dotted', sp.dotted, 'bold', sp.bold
+            ))
+            FROM SentenceParts sp WHERE sp.sentence_id = ks.id
+          )
+        ))
+        FROM KeySentences ks
+        WHERE ks.grammar_point_id = gp.id
+      ) AS keySentences,
+      (
+        SELECT json_group_array(json_object('content', ex.content, 'translations',
+          (
+            SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
+            FROM Translations tr WHERE tr.reference_id = ex.id AND tr.table_type = 'Examples'
+          )
+        ))
+        FROM Examples ex
+        WHERE ex.grammar_point_id = gp.id
+      ) AS examples,
+       (
+          SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
+          FROM Translations tr WHERE tr.reference_id = gp.id AND tr.table_type = 'Notes'
+      ) AS notes,
+      (
+        SELECT json_group_array(json_object('language_code', tr.language_code, 'content', tr.translation))
+        FROM Translations tr
+        WHERE tr.reference_id = gp.id AND tr.table_type = 'Counterparts'
+      ) AS counterparts
     FROM GrammarPoints gp
-    LEFT JOIN Counterparts cp ON gp.id = cp.grammar_point_id
-    LEFT JOIN RelatedExpressions re ON gp.id = re.grammar_point_id
-    LEFT JOIN GrammarPoints rgp ON re.related_grammar_point_id = rgp.id
-    LEFT JOIN Formations f ON gp.id = f.grammar_point_id
-    LEFT JOIN KeySentences ks ON gp.id = ks.grammar_point_id
-    LEFT JOIN Examples ex ON gp.id = ex.grammar_point_id
     GROUP BY gp.id
   `)
   return data.map((item: any) => ({
@@ -185,12 +233,13 @@ async function fetchGrammarPoints() {
     content: item.content,
     romaji: item.romaji,
     part_of_speech: item.part_of_speech,
-    counterparts: JSON.parse(item.counterparts),
-    relatedExpressions: JSON.parse(item.relatedExpressions),
-    formations: JSON.parse(item.formations),
-    keySentences: JSON.parse(item.keySentences),
-    examples: JSON.parse(item.examples),
-    notes: item.notes ? JSON.parse(item.notes) : undefined,
+    translations: JSON.parse(item.translations || '[]'),
+    relatedExpressions: JSON.parse(item.relatedExpressions || '[]'),
+    formations: JSON.parse(item.formations || '[]'),
+    keySentences: JSON.parse(item.keySentences || '[]'),
+    examples: JSON.parse(item.examples || '[]'),
+    notes: JSON.parse(item.notes || '[]'),
+    counterparts: JSON.parse(item.counterparts || '[]'),
   }))
 }
 
@@ -205,14 +254,6 @@ onMounted(async () => {
 
 async function processKeySentences() {
   await nextTick()
-  await nextTick()
-  await nextTick()
-  await nextTick()
-  await nextTick()
-  await nextTick()
-  await nextTick()
-  await nextTick()
-
   grammarPoints.value.map((gp) => {
     gp.keySentences.forEach((ks) => {
       const ref = textContainer.value[ks.id]
