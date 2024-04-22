@@ -17,7 +17,7 @@
             <div class="text-sm text-gray-700">
               <strong>Counterparts:</strong>
               <p v-for="(counterpart, idx) in grammarPoint.counterparts" :key="idx">
-                {{ counterpart.language_code.toUpperCase() }}: {{ counterpart.content }}<br />
+                <BaseChip :text='counterpart.language_code.toUpperCase()' /> {{ counterpart.content }}<br />
               </p>
             </div>
           </div>
@@ -49,7 +49,8 @@
               ></p>
               <template v-if="sentence.translations" class="ml-4">
                 <span v-for="(translation, idx) in sentence.translations" :key="idx">
-                  {{ translation.language_code.toUpperCase() }}: {{ translation.content }}<br />
+                  <BaseChip :text='translation.language_code.toUpperCase()' />
+                  {{ translation.content }}
                 </span>
               </template>
             </template>
@@ -65,7 +66,8 @@
                   :key="tIndex"
                   class="ml-4"
                 >
-                  {{ translation.language_code.toUpperCase() }}: {{ translation.content }}<br />
+                  <BaseChip :text='translation.language_code.toUpperCase()' />
+                  {{ translation.content }}
                 </div>
               </div>
             </p>
@@ -76,7 +78,8 @@
               {{ example.content }}
               <div v-if="example.translations" class="ml-4">
                 <span v-for="(translation, idx) in example.translations" :key="idx">
-                  {{ translation.language_code.toUpperCase() }}: {{ translation.content }}<br />
+                  <BaseChip :text='translation.language_code.toUpperCase()' />
+                  {{ translation.content }}
                 </span>
               </div>
             </p>
@@ -85,8 +88,8 @@
             <strong>Notes:</strong>
             <div class="ml-4">
               <template v-for="(note, index) in grammarPoint.notes" :key="index">
-                {{ note.language_code.toUpperCase() }}:
-                <div class="whitespace-pre-wrap">
+                <BaseChip :text='note.language_code.toUpperCase()' class='absolute -ml-1 mt-1' />
+                <div class="whitespace-pre-wrap ml-8">
                   <VueMarkdown :source="note.content" />
                 </div>
               </template>
@@ -102,6 +105,7 @@
 import VueMarkdown from 'vue-markdown-render'
 import { ref, onMounted, toRaw, nextTick } from 'vue'
 import { exec } from '~src/utils/sqllite.ts'
+import BaseChip from '~src/components/BaseChip.vue'
 
 interface Translation {
   language_code: string
