@@ -50,109 +50,107 @@
 
       <div v-if="loading" class="text-gray-500">Loading...</div>
 
-      <RecycleScroller
+      <DynamicScroller
         class="flex flex-col gap-6"
         :items="filteredGrammarPoints"
-        :item-size="42"
+        :min-item-size="42"
         key-field="id"
-        v-slot="{ item }"
       >
-        <template v-for="grammarPoint in filteredGrammarPoints" :key="grammarPoint.id">
-          <section class="flex flex-col p-4 rounded-lg shadow bg-white">
-            <h2 class="text-xl font-semibold mb-2">
-              {{ grammarPoint.content }} ({{ grammarPoint.romaji }})
-            </h2>
-            <div class="flex justify-between">
-              <p class="text-sm text-gray-700">
-                <strong>Part of Speech:</strong> {{ grammarPoint.part_of_speech }}
-              </p>
-              <div class="text-sm text-gray-700">
-                <strong>Counterparts:</strong>
-                <p v-for="(counterpart, idx) in grammarPoint.counterparts" :key="idx">
-                  <BaseChip :text="counterpart.language_code.toUpperCase()" />
-                  {{ counterpart.content }}<br />
+        <template v-slot="{ item, active }">
+          <DynamicScrollerItem :item="item" :active="active">
+            <section class="flex flex-col p-4 rounded-lg shadow bg-white">
+              <h2 class="text-xl font-semibold mb-2">{{ item.content }} ({{ item.romaji }})</h2>
+              <div class="flex justify-between">
+                <p class="text-sm text-gray-700">
+                  <strong>Part of Speech:</strong> {{ item.part_of_speech }}
                 </p>
+                <div class="text-sm text-gray-700">
+                  <strong>Counterparts:</strong>
+                  <p v-for="(counterpart, idx) in item.counterparts" :key="idx">
+                    <BaseChip :text="counterpart.language_code.toUpperCase()" />
+                    {{ counterpart.content }}<br />
+                  </p>
+                </div>
               </div>
-            </div>
-            <div>
-              <strong>Related Expressions:</strong>
-              <template v-for="(expression, index) in grammarPoint.relatedExpressions" :key="index">
-                {{ expression.content }}
-              </template>
-            </div>
-            <div>
-              <strong>Key Sentences:</strong>
-              <template v-for="(sentence, index) in grammarPoint.keySentences" :key="index">
-                <p
-                  :ref="
-                    (el) => {
-                      textContainer[sentence.id] = el as HTMLElement
-                    }
-                  "
-                  :id="'test-' + sentence.id"
-                  class="relative"
-                ></p>
-                <template v-if="sentence.translations">
-                  <span v-for="(translation, idx) in sentence.translations" :key="idx">
-                    <BaseChip :text="translation.language_code.toUpperCase()" />
-                    {{ translation.content }}
-                  </span>
+              <div>
+                <strong>Related Expressions:</strong>
+                <template v-for="(expression, index) in item.relatedExpressions" :key="index">
+                  {{ expression.content }}
                 </template>
-              </template>
-            </div>
-            <div>
-              <strong>Formations:</strong>
-              <div
-                v-for="(formation, fIndex) in grammarPoint.formations"
-                :key="fIndex"
-                class="ml-4"
-              >
-                {{ formation.content }}
-                <div v-for="(example, eIndex) in formation.examples" :key="eIndex">
+              </div>
+              <div>
+                <strong>Key Sentences:</strong>
+                <template v-for="(sentence, index) in item.keySentences" :key="index">
+                  <p
+                    :ref="
+                      (el) => {
+                        textContainer[sentence.id] = el as HTMLElement
+                      }
+                    "
+                    :id="'test-' + sentence.id"
+                    class="relative"
+                  ></p>
+                  <template v-if="sentence.translations">
+                    <span v-for="(translation, idx) in sentence.translations" :key="idx">
+                      <BaseChip :text="translation.language_code.toUpperCase()" />
+                      {{ translation.content }}
+                    </span>
+                  </template>
+                </template>
+              </div>
+              <div>
+                <strong>Formations:</strong>
+                <div v-for="(formation, fIndex) in item.formations" :key="fIndex" class="ml-4">
+                  {{ formation.content }}
+                  <div v-for="(example, eIndex) in formation.examples" :key="eIndex">
+                    {{ example.content }}
+                    <div
+                      v-for="(translation, tIndex) in example.translations"
+                      :key="tIndex"
+                      class="ml-4"
+                    >
+                      <BaseChip :text="translation.language_code.toUpperCase()" />
+                      {{ translation.content }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <strong>Examples:</strong>
+                <div v-for="(example, index) in item.examples" :key="index" class="ml-4">
                   {{ example.content }}
-                  <div
-                    v-for="(translation, tIndex) in example.translations"
-                    :key="tIndex"
-                    class="ml-4"
-                  >
-                    <BaseChip :text="translation.language_code.toUpperCase()" />
-                    {{ translation.content }}
+                  <div v-if="example.translations" class="ml-4">
+                    <span v-for="(translation, idx) in example.translations" :key="idx">
+                      <BaseChip :text="translation.language_code.toUpperCase()" />
+                      {{ translation.content }}
+                    </span>
                   </div>
                 </div>
               </div>
-            </div>
-            <div>
-              <strong>Examples:</strong>
-              <div v-for="(example, index) in grammarPoint.examples" :key="index" class="ml-4">
-                {{ example.content }}
-                <div v-if="example.translations" class="ml-4">
-                  <span v-for="(translation, idx) in example.translations" :key="idx">
-                    <BaseChip :text="translation.language_code.toUpperCase()" />
-                    {{ translation.content }}
-                  </span>
+              <div v-if="item.notes">
+                <strong>Notes:</strong>
+                <div class="ml-4">
+                  <template v-for="(note, index) in item.notes" :key="index">
+                    <BaseChip
+                      :text="note.language_code.toUpperCase()"
+                      class="absolute -ml-1 mt-1"
+                    />
+                    <div class="whitespace-pre-wrap ml-8">
+                      <VueMarkdown :source="note.content" />
+                    </div>
+                  </template>
                 </div>
               </div>
-            </div>
-            <div v-if="grammarPoint.notes">
-              <strong>Notes:</strong>
-              <div class="ml-4">
-                <template v-for="(note, index) in grammarPoint.notes" :key="index">
-                  <BaseChip :text="note.language_code.toUpperCase()" class="absolute -ml-1 mt-1" />
-                  <div class="whitespace-pre-wrap ml-8">
-                    <VueMarkdown :source="note.content" />
-                  </div>
-                </template>
-              </div>
-            </div>
-          </section>
+            </section>
+          </DynamicScrollerItem>
         </template>
-      </RecycleScroller>
+      </DynamicScroller>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { RecycleScroller } from 'vue-virtual-scroller'
+import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
 import VueMarkdown from 'vue-markdown-render'
 import { computed, nextTick, onMounted, ref, toRaw } from 'vue'
 import { exec } from '~src/utils/sqllite.ts'
