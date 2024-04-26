@@ -1,110 +1,132 @@
 <template>
-  <div class="p-6">
+  <div>
     <h1 class="text-3xl font-bold mb-6 text-gray-800">BunpoNavi - Your grammar guide</h1>
-
-    <div class="flex gap-2 bg-gray-100 p-4 rounded-lg">
-      <span class="font-semibold text-gray-700 mr-2">Filter by Language:</span>
-      <BaseChip
-        v-for="lang in availableLanguages"
-        :key="lang.code"
-        class="cursor-pointer text-[1rem] py-3 border-4"
-        :text="lang.code"
-        :class="{
-          'border-blue-400': languageFilters.includes(lang.code),
-          'border-transparent': !languageFilters.includes(lang.code),
-        }"
-        @click="toggleLanguageFilter(lang.code)"
-      />
+  </div>
+  <div class="flex">
+    <!-- Left Sidebar for Grammar Points List -->
+    <div class="w-1/4 h-screen overflow-auto bg-gray-200">
+      <ul class="space-y-2">
+        <li
+          v-for="grammarPoint in grammarPoints"
+          :key="grammarPoint.id"
+          class="px-3 py-2 hover:bg-gray-300 bg-white cursor-pointer rounded-md"
+        >
+          <span class="font-medium text-gray-700">{{ grammarPoint.content }}</span>
+          <span class="text-sm text-gray-500">({{ grammarPoint.romaji }})</span>
+        </li>
+      </ul>
     </div>
 
-    <div v-if="loading" class="text-gray-500">Loading...</div>
+    <!-- Main Content View -->
+    <div class="px-6 w-3/4">
+      <div class="flex gap-2 bg-gray-100 px-4 pt-3 rounded-lg mb-3">
+        <span class="font-semibold text-gray-700 mr-2">Filter by Language:</span>
+        <BaseChip
+          v-for="lang in availableLanguages"
+          :key="lang.code"
+          class="cursor-pointer text-[1rem] py-3 border-4"
+          :text="lang.code"
+          :class="{
+            'border-blue-400': languageFilters.includes(lang.code),
+            'border-transparent': !languageFilters.includes(lang.code),
+          }"
+          @click="toggleLanguageFilter(lang.code)"
+        />
+      </div>
 
-    <div v-else class="flex flex-col gap-6">
-      <template v-for="grammarPoint in filteredGrammarPoints" :key="grammarPoint.id">
-        <section class="flex flex-col p-4 rounded-lg shadow bg-white">
-          <h2 class="text-xl font-semibold mb-2">
-            {{ grammarPoint.content }} ({{ grammarPoint.romaji }})
-          </h2>
-          <div class="flex justify-between">
-            <p class="text-sm text-gray-700">
-              <strong>Part of Speech:</strong> {{ grammarPoint.part_of_speech }}
-            </p>
-            <div class="text-sm text-gray-700">
-              <strong>Counterparts:</strong>
-              <p v-for="(counterpart, idx) in grammarPoint.counterparts" :key="idx">
-                <BaseChip :text="counterpart.language_code.toUpperCase()" /> {{ counterpart.content
-                }}<br />
+      <div v-if="loading" class="text-gray-500">Loading...</div>
+
+      <div v-else class="flex flex-col gap-6">
+        <template v-for="grammarPoint in filteredGrammarPoints" :key="grammarPoint.id">
+          <section class="flex flex-col p-4 rounded-lg shadow bg-white">
+            <h2 class="text-xl font-semibold mb-2">
+              {{ grammarPoint.content }} ({{ grammarPoint.romaji }})
+            </h2>
+            <div class="flex justify-between">
+              <p class="text-sm text-gray-700">
+                <strong>Part of Speech:</strong> {{ grammarPoint.part_of_speech }}
               </p>
+              <div class="text-sm text-gray-700">
+                <strong>Counterparts:</strong>
+                <p v-for="(counterpart, idx) in grammarPoint.counterparts" :key="idx">
+                  <BaseChip :text="counterpart.language_code.toUpperCase()" />
+                  {{ counterpart.content }}<br />
+                </p>
+              </div>
             </div>
-          </div>
-          <div>
-            <strong>Related Expressions:</strong>
-            <template v-for="(expression, index) in grammarPoint.relatedExpressions" :key="index">
-              {{ expression.content }}
-            </template>
-          </div>
-          <div>
-            <strong>Key Sentences:</strong>
-            <template v-for="(sentence, index) in grammarPoint.keySentences" :key="index">
-              <p
-                :ref="
-                  (el) => {
-                    textContainer[sentence.id] = el as HTMLElement
-                  }
-                "
-                :id="'test-' + sentence.id"
-                class="relative"
-              ></p>
-              <template v-if="sentence.translations">
-                <span v-for="(translation, idx) in sentence.translations" :key="idx">
-                  <BaseChip :text="translation.language_code.toUpperCase()" />
-                  {{ translation.content }}
-                </span>
+            <div>
+              <strong>Related Expressions:</strong>
+              <template v-for="(expression, index) in grammarPoint.relatedExpressions" :key="index">
+                {{ expression.content }}
               </template>
-            </template>
-          </div>
-          <div>
-            <strong>Formations:</strong>
-            <div v-for="(formation, fIndex) in grammarPoint.formations" :key="fIndex" class="ml-4">
-              {{ formation.content }}
-              <div v-for="(example, eIndex) in formation.examples" :key="eIndex">
+            </div>
+            <div>
+              <strong>Key Sentences:</strong>
+              <template v-for="(sentence, index) in grammarPoint.keySentences" :key="index">
+                <p
+                  :ref="
+                    (el) => {
+                      textContainer[sentence.id] = el as HTMLElement
+                    }
+                  "
+                  :id="'test-' + sentence.id"
+                  class="relative"
+                ></p>
+                <template v-if="sentence.translations">
+                  <span v-for="(translation, idx) in sentence.translations" :key="idx">
+                    <BaseChip :text="translation.language_code.toUpperCase()" />
+                    {{ translation.content }}
+                  </span>
+                </template>
+              </template>
+            </div>
+            <div>
+              <strong>Formations:</strong>
+              <div
+                v-for="(formation, fIndex) in grammarPoint.formations"
+                :key="fIndex"
+                class="ml-4"
+              >
+                {{ formation.content }}
+                <div v-for="(example, eIndex) in formation.examples" :key="eIndex">
+                  {{ example.content }}
+                  <div
+                    v-for="(translation, tIndex) in example.translations"
+                    :key="tIndex"
+                    class="ml-4"
+                  >
+                    <BaseChip :text="translation.language_code.toUpperCase()" />
+                    {{ translation.content }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <strong>Examples:</strong>
+              <div v-for="(example, index) in grammarPoint.examples" :key="index" class="ml-4">
                 {{ example.content }}
-                <div
-                  v-for="(translation, tIndex) in example.translations"
-                  :key="tIndex"
-                  class="ml-4"
-                >
-                  <BaseChip :text="translation.language_code.toUpperCase()" />
-                  {{ translation.content }}
+                <div v-if="example.translations" class="ml-4">
+                  <span v-for="(translation, idx) in example.translations" :key="idx">
+                    <BaseChip :text="translation.language_code.toUpperCase()" />
+                    {{ translation.content }}
+                  </span>
                 </div>
               </div>
             </div>
-          </div>
-          <div>
-            <strong>Examples:</strong>
-            <div v-for="(example, index) in grammarPoint.examples" :key="index" class="ml-4">
-              {{ example.content }}
-              <div v-if="example.translations" class="ml-4">
-                <span v-for="(translation, idx) in example.translations" :key="idx">
-                  <BaseChip :text="translation.language_code.toUpperCase()" />
-                  {{ translation.content }}
-                </span>
+            <div v-if="grammarPoint.notes">
+              <strong>Notes:</strong>
+              <div class="ml-4">
+                <template v-for="(note, index) in grammarPoint.notes" :key="index">
+                  <BaseChip :text="note.language_code.toUpperCase()" class="absolute -ml-1 mt-1" />
+                  <div class="whitespace-pre-wrap ml-8">
+                    <VueMarkdown :source="note.content" />
+                  </div>
+                </template>
               </div>
             </div>
-          </div>
-          <div v-if="grammarPoint.notes">
-            <strong>Notes:</strong>
-            <div class="ml-4">
-              <template v-for="(note, index) in grammarPoint.notes" :key="index">
-                <BaseChip :text="note.language_code.toUpperCase()" class="absolute -ml-1 mt-1" />
-                <div class="whitespace-pre-wrap ml-8">
-                  <VueMarkdown :source="note.content" />
-                </div>
-              </template>
-            </div>
-          </div>
-        </section>
-      </template>
+          </section>
+        </template>
+      </div>
     </div>
   </div>
 </template>
