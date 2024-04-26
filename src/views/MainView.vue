@@ -50,7 +50,13 @@
 
       <div v-if="loading" class="text-gray-500">Loading...</div>
 
-      <div v-else class="flex flex-col gap-6">
+      <RecycleScroller
+        class="flex flex-col gap-6"
+        :items="filteredGrammarPoints"
+        :item-size="42"
+        key-field="id"
+        v-slot="{ item }"
+      >
         <template v-for="grammarPoint in filteredGrammarPoints" :key="grammarPoint.id">
           <section class="flex flex-col p-4 rounded-lg shadow bg-white">
             <h2 class="text-xl font-semibold mb-2">
@@ -140,12 +146,13 @@
             </div>
           </section>
         </template>
-      </div>
+      </RecycleScroller>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { RecycleScroller } from 'vue-virtual-scroller'
 import VueMarkdown from 'vue-markdown-render'
 import { computed, nextTick, onMounted, ref, toRaw } from 'vue'
 import { exec } from '~src/utils/sqllite.ts'
