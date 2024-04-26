@@ -1,3 +1,12 @@
+<template>
+  <div
+    class="inline-flex items-center px-2 h-[1.2rem] text-white rounded-full text-[0.6rem] translate-y-[-3px] text-center"
+    :style="{ backgroundColor: backgroundColor }"
+  >
+    {{ text }}
+  </div>
+</template>
+
 <script setup lang="ts">
 import { defineProps, computed } from 'vue'
 
@@ -19,12 +28,3 @@ const backgroundColor = computed(() => {
   return color
 })
 </script>
-
-<template>
-  <div
-    class="inline-flex items-center px-2 h-[1.2rem] text-white rounded-full text-[0.6rem] translate-y-[-3px] text-center"
-    :style="{ backgroundColor: backgroundColor }"
-  >
-    {{ text }}
-  </div>
-</template>

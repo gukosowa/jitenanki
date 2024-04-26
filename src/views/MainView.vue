@@ -2,16 +2,19 @@
   <div class="p-6">
     <h1 class="text-3xl font-bold mb-6 text-gray-800">BunpoNavi - Your grammar guide</h1>
 
-    <div>
-      <input v-model="languageFilter" placeholder="Filter by language code (e.g., 'en', 'jp')" />
-      <div v-if="filteredGrammarPoints.length > 0">
-        <template v-for="grammarPoint in filteredGrammarPoints" :key="grammarPoint.id">
-          <!-- Content here remains the same as your current implementation -->
-        </template>
-      </div>
-      <div v-else>
-        <p>No grammar points match the selected language.</p>
-      </div>
+    <div class="flex gap-2 bg-gray-100 p-4 rounded-lg">
+      <span class="font-semibold text-gray-700 mr-2">Filter by Language:</span>
+      <BaseChip
+        v-for="lang in availableLanguages"
+        :key="lang.code"
+        class="cursor-pointer text-[1rem] py-3 border-4"
+        :text="lang.code"
+        :class="{
+          'border-blue-400': languageFilter.includes(lang.code),
+          'border-transparent': !languageFilter.includes(lang.code),
+        }"
+        @click="toggleLanguageFilter(lang.code)"
+      />
     </div>
 
     <div v-if="loading" class="text-gray-500">Loading...</div>
@@ -167,8 +170,6 @@ const filterTranslations = (translations: Translation[] | undefined, code: strin
 
 const filteredGrammarPoints = computed(() => {
   nextTick(() => {
-    console.log('filtered')
-    console.log(toRaw(filteredGrammarPoints.value))
     filteredGrammarPoints.value.forEach((gp) => {
       gp.keySentences.forEach((ks) => {
         const ref = textContainer.value[ks.id]
@@ -177,38 +178,71 @@ const filteredGrammarPoints = computed(() => {
     })
   })
 
-  if (!languageFilter.value) {
-    return grammarPoints.value
+  const fallbackLanguage = 'en'
+
+  const filterWithFallback = (
+    translations: Translation[] | undefined,
+    primaryCode: string,
+    fallbackCode: string,
+  ) => {
+    if (!primaryCode) return translations || []
+    const primaryFiltered = filterTranslations(translations, primaryCode)
+    if (primaryFiltered.length > 0) return primaryFiltered
+    const fallbackFiltered = filterTranslations(translations, fallbackCode)
+    return fallbackFiltered.length > 0
+      ? fallbackFiltered
+      : translations?.length
+        ? [translations[0]]
+        : []
   }
+
   return grammarPoints.value
     .map((grammarPoint) => ({
       ...grammarPoint,
-      //translations: filterTranslations(grammarPoint.translations, languageFilter.value),
       examples: grammarPoint.examples.map((example) => ({
         ...example,
-        translations: filterTranslations(example.translations, languageFilter.value),
+        translations: filterWithFallback(
+          example.translations,
+          languageFilter.value,
+          fallbackLanguage,
+        ),
       })),
       keySentences: grammarPoint.keySentences.map((sentence) => ({
         ...sentence,
-        translations: filterTranslations(sentence.translations, languageFilter.value),
+        translations: filterWithFallback(
+          sentence.translations,
+          languageFilter.value,
+          fallbackLanguage,
+        ),
       })),
       relatedExpressions: grammarPoint.relatedExpressions.map((expression) => ({
         ...expression,
-        translations: filterTranslations(expression.translations, languageFilter.value),
+        translations: filterWithFallback(
+          expression.translations,
+          languageFilter.value,
+          fallbackLanguage,
+        ),
       })),
       formations: grammarPoint.formations.map((formation) => ({
         ...formation,
         examples: formation.examples?.map((example) => ({
           ...example,
-          translations: filterTranslations(example.translations, languageFilter.value),
+          translations: filterWithFallback(
+            example.translations,
+            languageFilter.value,
+            fallbackLanguage,
+          ),
         })),
       })),
-      counterparts: filterTranslations(grammarPoint.counterparts, languageFilter.value),
-      notes: filterTranslations(grammarPoint.notes, languageFilter.value),
+      counterparts: filterWithFallback(
+        grammarPoint.counterparts,
+        languageFilter.value,
+        fallbackLanguage,
+      ),
+      notes: filterWithFallback(grammarPoint.notes, languageFilter.value, fallbackLanguage),
     }))
     .filter(
       (gp) =>
-        // gp.translations.length > 0 ||
         gp.examples.some((e) => e.translations.length > 0) ||
         gp.keySentences.some((ks) => ks.translations.length > 0) ||
         gp.relatedExpressions.some((re) => re.translations.length > 0) ||
@@ -314,6 +348,25 @@ async function fetchGrammarPoints() {
     notes: JSON.parse(item.notes || '[]'),
     counterparts: JSON.parse(item.counterparts || '[]'),
   }))
+}
+
+const availableLanguages = ref<{ code: string; name: string }[]>([])
+
+async function fetchLanguages() {
+  const data = await exec(`
+    SELECT
+      code,
+      name
+    FROM Languages
+  `)
+
+  availableLanguages.value = data
+}
+
+fetchLanguages()
+
+function toggleLanguageFilter(code: string) {
+  languageFilter.value = code
 }
 
 onMounted(async () => {
