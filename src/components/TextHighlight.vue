@@ -1,5 +1,5 @@
 <template>
-  <span v-for="(part, index) in highlightedText" :key="index">
+  <span v-bind="$attrs" v-for="(part, index) in highlightedText" :key="index">
     <span v-if="isMatch(part)" v-bind="bindHighlight">{{ part }}</span>
     <template v-else>{{ part }}</template>
   </span>

@@ -16,8 +16,17 @@
           :key="grammarPoint.id"
           class="px-3 py-2 hover:bg-gray-300 bg-white cursor-pointer rounded-md"
         >
-          <span class="font-medium text-gray-700">{{ grammarPoint.content }}</span>
-          <span class="text-sm text-gray-500">({{ grammarPoint.romaji }})</span>
+          <TextHighlight
+            :text="grammarPoint.content"
+            :searchTerm="searchTerm"
+            :bindHighlight="{ class: 'underline' }"
+          />
+          <TextHighlight
+            :text="' (' + grammarPoint.romaji + ')'"
+            class="text-gray-500 text-sm"
+            :searchTerm="searchTerm"
+            :bindHighlight="{ class: 'underline' }"
+          />
         </li>
       </ul>
     </div>
@@ -141,6 +150,7 @@ import VueMarkdown from 'vue-markdown-render'
 import { computed, nextTick, onMounted, ref, toRaw } from 'vue'
 import { exec } from '~src/utils/sqllite.ts'
 import BaseChip from '~src/components/BaseChip.vue'
+import TextHighlight from '~src/components/TextHighlight.vue'
 
 interface Translation {
   language_code: string
