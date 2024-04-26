@@ -19,13 +19,13 @@
           <TextHighlight
             :text="grammarPoint.content"
             :searchTerm="searchTerm"
-            :bindHighlight="{ class: 'underline' }"
+            :bindHighlight="{ class: 'underline font-semibold text-blue-600' }"
           />
           <TextHighlight
             :text="' (' + grammarPoint.romaji + ')'"
             class="text-gray-500 text-sm"
             :searchTerm="searchTerm"
-            :bindHighlight="{ class: 'underline' }"
+            :bindHighlight="{ class: 'underline font-semibold text-blue-600' }"
           />
         </li>
       </ul>
