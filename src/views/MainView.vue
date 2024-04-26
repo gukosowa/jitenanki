@@ -5,9 +5,14 @@
   <div class="flex">
     <!-- Left Sidebar for Grammar Points List -->
     <div class="w-1/4 h-screen overflow-auto bg-gray-200">
+      <input
+        v-model="searchTerm"
+        class="w-full p-2 mb-4 text-gray-700 bg-white border rounded-md"
+        placeholder="Search grammar points..."
+      />
       <ul class="space-y-2">
         <li
-          v-for="grammarPoint in grammarPoints"
+          v-for="grammarPoint in filteredGrammarPoints"
           :key="grammarPoint.id"
           class="px-3 py-2 hover:bg-gray-300 bg-white cursor-pointer rounded-md"
         >
@@ -192,6 +197,8 @@ const filterTranslations = (translations: Translation[] | undefined, codes: stri
     codes.map((code) => code.toLowerCase()).includes(t.language_code.toLowerCase()),
   ) || []
 
+const searchTerm = ref('')
+
 const filteredGrammarPoints = computed(() => {
   nextTick(() => {
     filteredGrammarPoints.value.forEach((gp) => {
@@ -220,7 +227,7 @@ const filteredGrammarPoints = computed(() => {
         : []
   }
 
-  return grammarPoints.value
+  const filteredLang = grammarPoints.value
     .map((grammarPoint) => ({
       ...grammarPoint,
       examples: grammarPoint.examples.map((example) => ({
@@ -274,6 +281,16 @@ const filteredGrammarPoints = computed(() => {
         gp.counterparts.length > 0 ||
         (gp.notes && gp.notes.length > 0),
     )
+
+  if (searchTerm.value) {
+    return filteredLang.filter(
+      (gp) =>
+        gp.content.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+        gp.romaji.toLowerCase().includes(searchTerm.value.toLowerCase()),
+    )
+  }
+
+  return filteredLang
 })
 
 const loading = ref(true)
