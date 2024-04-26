@@ -10,8 +10,8 @@
         class="cursor-pointer text-[1rem] py-3 border-4"
         :text="lang.code"
         :class="{
-          'border-blue-400': languageFilter.includes(lang.code),
-          'border-transparent': !languageFilter.includes(lang.code),
+          'border-blue-400': languageFilters.includes(lang.code),
+          'border-transparent': !languageFilters.includes(lang.code),
         }"
         @click="toggleLanguageFilter(lang.code)"
       />
@@ -163,10 +163,12 @@ interface GrammarPoint {
 
 const grammarPoints = ref<GrammarPoint[]>([])
 
-const languageFilter = ref<string>('')
+const languageFilters = ref<string[]>([])
 
-const filterTranslations = (translations: Translation[] | undefined, code: string) =>
-  translations?.filter((t) => t.language_code.toLowerCase() === code.toLowerCase()) || []
+const filterTranslations = (translations: Translation[] | undefined, codes: string[]) =>
+  translations?.filter((t) =>
+    codes.map((code) => code.toLowerCase()).includes(t.language_code.toLowerCase()),
+  ) || []
 
 const filteredGrammarPoints = computed(() => {
   nextTick(() => {
@@ -182,13 +184,13 @@ const filteredGrammarPoints = computed(() => {
 
   const filterWithFallback = (
     translations: Translation[] | undefined,
-    primaryCode: string,
+    primaryCodes: string[],
     fallbackCode: string,
   ) => {
-    if (!primaryCode) return translations || []
-    const primaryFiltered = filterTranslations(translations, primaryCode)
+    if (!primaryCodes.length) return translations || []
+    const primaryFiltered = filterTranslations(translations, primaryCodes)
     if (primaryFiltered.length > 0) return primaryFiltered
-    const fallbackFiltered = filterTranslations(translations, fallbackCode)
+    const fallbackFiltered = filterTranslations(translations, [fallbackCode])
     return fallbackFiltered.length > 0
       ? fallbackFiltered
       : translations?.length
@@ -203,7 +205,7 @@ const filteredGrammarPoints = computed(() => {
         ...example,
         translations: filterWithFallback(
           example.translations,
-          languageFilter.value,
+          languageFilters.value,
           fallbackLanguage,
         ),
       })),
@@ -211,7 +213,7 @@ const filteredGrammarPoints = computed(() => {
         ...sentence,
         translations: filterWithFallback(
           sentence.translations,
-          languageFilter.value,
+          languageFilters.value,
           fallbackLanguage,
         ),
       })),
@@ -219,7 +221,7 @@ const filteredGrammarPoints = computed(() => {
         ...expression,
         translations: filterWithFallback(
           expression.translations,
-          languageFilter.value,
+          languageFilters.value,
           fallbackLanguage,
         ),
       })),
@@ -229,17 +231,17 @@ const filteredGrammarPoints = computed(() => {
           ...example,
           translations: filterWithFallback(
             example.translations,
-            languageFilter.value,
+            languageFilters.value,
             fallbackLanguage,
           ),
         })),
       })),
       counterparts: filterWithFallback(
         grammarPoint.counterparts,
-        languageFilter.value,
+        languageFilters.value,
         fallbackLanguage,
       ),
-      notes: filterWithFallback(grammarPoint.notes, languageFilter.value, fallbackLanguage),
+      notes: filterWithFallback(grammarPoint.notes, languageFilters.value, fallbackLanguage),
     }))
     .filter(
       (gp) =>
@@ -362,11 +364,15 @@ async function fetchLanguages() {
 
   availableLanguages.value = data
 }
-
 fetchLanguages()
 
 function toggleLanguageFilter(code: string) {
-  languageFilter.value = code
+  const index = languageFilters.value.indexOf(code)
+  if (index === -1) {
+    languageFilters.value.push(code)
+  } else {
+    languageFilters.value.splice(index, 1)
+  }
 }
 
 onMounted(async () => {
