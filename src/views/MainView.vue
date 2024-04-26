@@ -2,10 +2,22 @@
   <div class="p-6">
     <h1 class="text-3xl font-bold mb-6 text-gray-800">BunpoNavi - Your grammar guide</h1>
 
+    <div>
+      <input v-model="languageFilter" placeholder="Filter by language code (e.g., 'en', 'jp')" />
+      <div v-if="filteredGrammarPoints.length > 0">
+        <template v-for="grammarPoint in filteredGrammarPoints" :key="grammarPoint.id">
+          <!-- Content here remains the same as your current implementation -->
+        </template>
+      </div>
+      <div v-else>
+        <p>No grammar points match the selected language.</p>
+      </div>
+    </div>
+
     <div v-if="loading" class="text-gray-500">Loading...</div>
 
     <div v-else class="flex flex-col gap-6">
-      <template v-for="grammarPoint in grammarPoints" :key="grammarPoint.id">
+      <template v-for="grammarPoint in filteredGrammarPoints" :key="grammarPoint.id">
         <section class="flex flex-col p-4 rounded-lg shadow bg-white">
           <h2 class="text-xl font-semibold mb-2">
             {{ grammarPoint.content }} ({{ grammarPoint.romaji }})
@@ -17,27 +29,20 @@
             <div class="text-sm text-gray-700">
               <strong>Counterparts:</strong>
               <p v-for="(counterpart, idx) in grammarPoint.counterparts" :key="idx">
-                <BaseChip :text='counterpart.language_code.toUpperCase()' /> {{ counterpart.content }}<br />
+                <BaseChip :text="counterpart.language_code.toUpperCase()" /> {{ counterpart.content
+                }}<br />
               </p>
             </div>
           </div>
           <div>
             <strong>Related Expressions:</strong>
-            <template
-              v-for="(expression, index) in grammarPoint.relatedExpressions"
-              :key="index"
-              class="ml-4"
-            >
+            <template v-for="(expression, index) in grammarPoint.relatedExpressions" :key="index">
               {{ expression.content }}
             </template>
           </div>
           <div>
             <strong>Key Sentences:</strong>
-            <template
-              v-for="(sentence, index) in grammarPoint.keySentences"
-              :key="index"
-              class="ml-4"
-            >
+            <template v-for="(sentence, index) in grammarPoint.keySentences" :key="index">
               <p
                 :ref="
                   (el) => {
@@ -47,9 +52,9 @@
                 :id="'test-' + sentence.id"
                 class="relative"
               ></p>
-              <template v-if="sentence.translations" class="ml-4">
+              <template v-if="sentence.translations">
                 <span v-for="(translation, idx) in sentence.translations" :key="idx">
-                  <BaseChip :text='translation.language_code.toUpperCase()' />
+                  <BaseChip :text="translation.language_code.toUpperCase()" />
                   {{ translation.content }}
                 </span>
               </template>
@@ -57,7 +62,7 @@
           </div>
           <div>
             <strong>Formations:</strong>
-            <p v-for="(formation, fIndex) in grammarPoint.formations" :key="fIndex" class="ml-4">
+            <div v-for="(formation, fIndex) in grammarPoint.formations" :key="fIndex" class="ml-4">
               {{ formation.content }}
               <div v-for="(example, eIndex) in formation.examples" :key="eIndex">
                 {{ example.content }}
@@ -66,29 +71,29 @@
                   :key="tIndex"
                   class="ml-4"
                 >
-                  <BaseChip :text='translation.language_code.toUpperCase()' />
+                  <BaseChip :text="translation.language_code.toUpperCase()" />
                   {{ translation.content }}
                 </div>
               </div>
-            </p>
+            </div>
           </div>
           <div>
             <strong>Examples:</strong>
-            <p v-for="(example, index) in grammarPoint.examples" :key="index" class="ml-4">
+            <div v-for="(example, index) in grammarPoint.examples" :key="index" class="ml-4">
               {{ example.content }}
               <div v-if="example.translations" class="ml-4">
                 <span v-for="(translation, idx) in example.translations" :key="idx">
-                  <BaseChip :text='translation.language_code.toUpperCase()' />
+                  <BaseChip :text="translation.language_code.toUpperCase()" />
                   {{ translation.content }}
                 </span>
               </div>
-            </p>
+            </div>
           </div>
           <div v-if="grammarPoint.notes">
             <strong>Notes:</strong>
             <div class="ml-4">
               <template v-for="(note, index) in grammarPoint.notes" :key="index">
-                <BaseChip :text='note.language_code.toUpperCase()' class='absolute -ml-1 mt-1' />
+                <BaseChip :text="note.language_code.toUpperCase()" class="absolute -ml-1 mt-1" />
                 <div class="whitespace-pre-wrap ml-8">
                   <VueMarkdown :source="note.content" />
                 </div>
@@ -103,7 +108,7 @@
 
 <script setup lang="ts">
 import VueMarkdown from 'vue-markdown-render'
-import { ref, onMounted, toRaw, nextTick } from 'vue'
+import { computed, nextTick, onMounted, ref, toRaw } from 'vue'
 import { exec } from '~src/utils/sqllite.ts'
 import BaseChip from '~src/components/BaseChip.vue'
 
@@ -154,6 +159,65 @@ interface GrammarPoint {
 }
 
 const grammarPoints = ref<GrammarPoint[]>([])
+
+const languageFilter = ref<string>('')
+
+const filterTranslations = (translations: Translation[] | undefined, code: string) =>
+  translations?.filter((t) => t.language_code.toLowerCase() === code.toLowerCase()) || []
+
+const filteredGrammarPoints = computed(() => {
+  nextTick(() => {
+    console.log('filtered')
+    console.log(toRaw(filteredGrammarPoints.value))
+    filteredGrammarPoints.value.forEach((gp) => {
+      gp.keySentences.forEach((ks) => {
+        const ref = textContainer.value[ks.id]
+        processText(ref, ks.content, ks.parts as any)
+      })
+    })
+  })
+
+  if (!languageFilter.value) {
+    return grammarPoints.value
+  }
+  return grammarPoints.value
+    .map((grammarPoint) => ({
+      ...grammarPoint,
+      //translations: filterTranslations(grammarPoint.translations, languageFilter.value),
+      examples: grammarPoint.examples.map((example) => ({
+        ...example,
+        translations: filterTranslations(example.translations, languageFilter.value),
+      })),
+      keySentences: grammarPoint.keySentences.map((sentence) => ({
+        ...sentence,
+        translations: filterTranslations(sentence.translations, languageFilter.value),
+      })),
+      relatedExpressions: grammarPoint.relatedExpressions.map((expression) => ({
+        ...expression,
+        translations: filterTranslations(expression.translations, languageFilter.value),
+      })),
+      formations: grammarPoint.formations.map((formation) => ({
+        ...formation,
+        examples: formation.examples?.map((example) => ({
+          ...example,
+          translations: filterTranslations(example.translations, languageFilter.value),
+        })),
+      })),
+      counterparts: filterTranslations(grammarPoint.counterparts, languageFilter.value),
+      notes: filterTranslations(grammarPoint.notes, languageFilter.value),
+    }))
+    .filter(
+      (gp) =>
+        // gp.translations.length > 0 ||
+        gp.examples.some((e) => e.translations.length > 0) ||
+        gp.keySentences.some((ks) => ks.translations.length > 0) ||
+        gp.relatedExpressions.some((re) => re.translations.length > 0) ||
+        gp.formations.some((f) => f.examples!.some((ex) => ex.translations.length > 0)) ||
+        gp.counterparts.length > 0 ||
+        (gp.notes && gp.notes.length > 0),
+    )
+})
+
 const loading = ref(true)
 
 async function fetchGrammarPoints() {
@@ -294,7 +358,13 @@ interface Part {
 
 const textContainer = ref<Record<number, HTMLElement>>({})
 
-function processText(container: HTMLElement, text: string, parts: Part[]) {
+function processText(container: HTMLElement | undefined, text: string, parts: Part[]) {
+  if (!container) {
+    return
+  }
+
+  container.innerHTML = ''
+
   let matches: Match[] = []
   let splitIndexes = new Set<number>()
 
@@ -303,18 +373,18 @@ function processText(container: HTMLElement, text: string, parts: Part[]) {
     const regexMatches = [...text.matchAll(part.regex)]
     regexMatches.forEach((match) => {
       const matchText = part.group ? match[part.group] : match[0]
-      const matchStart = part.group ? match.index + match[0].indexOf(matchText) : match.index // Adjust start index for specific group
+      const matchStart = part.group ? match.index! + match[0].indexOf(matchText) : match.index // Adjust start index for specific group
       matches.push({
         text: part.label,
-        index: matchStart,
+        index: matchStart!,
         length: matchText.length,
         depth: 0,
         color: colors[colorIndex % colors.length],
         bold: part.bold,
         dotted: part.dotted,
       })
-      splitIndexes.add(matchStart)
-      splitIndexes.add(matchStart + matchText.length)
+      splitIndexes.add(matchStart!)
+      splitIndexes.add(matchStart! + matchText.length)
     })
   })
 
