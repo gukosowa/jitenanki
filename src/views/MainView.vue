@@ -51,14 +51,23 @@
       <div v-if="loading" class="text-gray-500">Loading...</div>
 
       <DynamicScroller
+        ref="refScroller"
         class="flex flex-col gap-6"
         :items="filteredGrammarPoints"
-        :min-item-size="42"
+        :min-item-size="455"
         key-field="id"
       >
-        <template v-slot="{ item, active }">
-          <DynamicScrollerItem :item="item" :active="active">
-            <section class="flex flex-col p-4 rounded-lg shadow bg-white">
+        <template v-slot="{ item, active, index }: any">
+          <DynamicScrollerItem
+            :item="item"
+            :active="active"
+            :size-dependencies="[item.message]"
+            :data-index="index"
+            :data-active="active"
+            class="absolute w-full"
+            :title="`Click to change message ${index}`"
+          >
+            <section class="w-full flex flex-col p-4 rounded-lg shadow bg-white mb-5">
               <h2 class="text-xl font-semibold mb-2">{{ item.content }} ({{ item.romaji }})</h2>
               <div class="flex justify-between">
                 <p class="text-sm text-gray-700">
@@ -87,6 +96,7 @@
                         textContainer[sentence.id] = el as HTMLElement
                       }
                     "
+                    style="min-height: 34px"
                     :id="'test-' + sentence.id"
                     class="relative"
                   ></p>
@@ -152,7 +162,7 @@
 <script setup lang="ts">
 import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
 import VueMarkdown from 'vue-markdown-render'
-import { computed, nextTick, onMounted, ref, toRaw } from 'vue'
+import { type ComponentInstance, computed, nextTick, onMounted, ref, toRaw } from 'vue'
 import { exec } from '~src/utils/sqllite.ts'
 import BaseChip from '~src/components/BaseChip.vue'
 import TextHighlight from '~src/components/TextHighlight.vue'
