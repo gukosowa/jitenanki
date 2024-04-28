@@ -4,35 +4,41 @@
   </div>
   <div class="flex">
     <!-- Left Sidebar for Grammar Points List -->
-    <div class="w-1/4 h-screen overflow-auto bg-gray-200">
+    <div class="h-screen w-64 bg-gray-200">
       <input
         v-model="searchTerm"
         class="w-full p-2 mb-4 text-gray-700 bg-white border rounded-md"
         placeholder="Search grammar points..."
       />
-      <ul class="space-y-2">
-        <li
-          v-for="grammarPoint in filteredGrammarPoints"
-          :key="grammarPoint.id"
-          class="px-3 py-2 hover:bg-gray-300 bg-white cursor-pointer rounded-md"
-        >
-          <TextHighlight
-            :text="grammarPoint.content"
-            :searchTerm="searchTerm"
-            :bindHighlight="{ class: 'underline font-semibold text-blue-600' }"
-          />
-          <TextHighlight
-            :text="' (' + grammarPoint.romaji + ')'"
-            class="text-gray-500 text-sm"
-            :searchTerm="searchTerm"
-            :bindHighlight="{ class: 'underline font-semibold text-blue-600' }"
-          />
-        </li>
-      </ul>
+      <RecycleScroller
+        class="space-y-2"
+        list-tag="ul"
+        item-tag="li"
+        item-class="absolute w-full"
+        :items="filteredGrammarPoints"
+        :item-size="50"
+        key-field="id"
+      >
+        <template v-slot="{ item: grammarPoint }">
+          <span class="block px-3 py-2 hover:bg-gray-300 bg-white cursor-pointer rounded-md">
+            <TextHighlight
+              :text="grammarPoint.content"
+              :searchTerm="searchTerm"
+              :bindHighlight="{ class: 'underline font-semibold text-blue-600' }"
+            />
+            <TextHighlight
+              :text="' (' + grammarPoint.romaji + ')'"
+              class="text-gray-500 text-sm"
+              :searchTerm="searchTerm"
+              :bindHighlight="{ class: 'underline font-semibold text-blue-600' }"
+            />
+          </span>
+        </template>
+      </RecycleScroller>
     </div>
 
     <!-- Main Content View -->
-    <div class="px-6 w-3/4">
+    <div class="px-6 flex-grow">
       <div class="flex gap-2 bg-gray-100 px-4 pt-3 rounded-lg mb-3">
         <span class="font-semibold text-gray-700 mr-2">Filter by Language:</span>
         <BaseChip
@@ -52,7 +58,7 @@
 
       <DynamicScroller
         ref="refScroller"
-        class="flex flex-col gap-6"
+        class="flex flex-col"
         :items="filteredGrammarPoints"
         :min-item-size="455"
         key-field="id"
@@ -160,9 +166,9 @@
 </template>
 
 <script setup lang="ts">
-import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
+import { DynamicScroller, DynamicScrollerItem, RecycleScroller } from 'vue-virtual-scroller'
 import VueMarkdown from 'vue-markdown-render'
-import { type ComponentInstance, computed, nextTick, onMounted, ref, toRaw } from 'vue'
+import { computed, nextTick, onMounted, ref, toRaw } from 'vue'
 import { exec } from '~src/utils/sqllite.ts'
 import BaseChip from '~src/components/BaseChip.vue'
 import TextHighlight from '~src/components/TextHighlight.vue'
