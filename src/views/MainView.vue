@@ -11,7 +11,7 @@
         placeholder="Search grammar points..."
       />
       <RecycleScroller
-        class="space-y-2"
+        class="space-y-2 relative"
         list-tag="ul"
         item-tag="li"
         item-class="absolute w-full"
@@ -190,7 +190,6 @@ interface Formation {
 
 interface SentencePart {
   content: string
-  part_type: string
   label: string
   regex: string
   group: number
@@ -376,7 +375,7 @@ async function fetchGrammarPoints() {
           ),
           'parts', (
             SELECT json_group_array(json_object(
-              'regex', sp.regex, 'label', sp.label, 'part_type', sp.part_type,
+              'regex', sp.regex, 'label', sp.label,
               'group_id', sp."group", 'dotted', sp.dotted, 'bold', sp.bold
             ))
             FROM SentenceParts sp WHERE sp.sentence_id = ks.id
