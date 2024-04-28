@@ -60,18 +60,19 @@
         ref="refScroller"
         class="flex flex-col"
         :items="filteredGrammarPoints"
+        emit-update
         :min-item-size="455"
         key-field="id"
+        @update="onUpdateScroller"
       >
         <template v-slot="{ item, active, index }: any">
           <DynamicScrollerItem
             :item="item"
             :active="active"
-            :size-dependencies="[item.message]"
+            :size-dependencies="[item.keySentences]"
             :data-index="index"
             :data-active="active"
             class="absolute w-full"
-            :title="`Click to change message ${index}`"
           >
             <section class="w-full flex flex-col p-4 rounded-lg shadow bg-white mb-5">
               <h2 class="text-xl font-semibold mb-2">{{ item.content }} ({{ item.romaji }})</h2>
@@ -93,7 +94,7 @@
                   {{ expression.content }}
                 </template>
               </div>
-              <div>
+              <div class="overflow-x-auto px-2">
                 <strong>Key Sentences:</strong>
                 <template v-for="(sentence, index) in item.keySentences" :key="index">
                   <p
@@ -104,7 +105,7 @@
                     "
                     style="min-height: 34px"
                     :id="'test-' + sentence.id"
-                    class="relative"
+                    class="relative text-nowrap"
                   ></p>
                   <template v-if="sentence.translations">
                     <span v-for="(translation, idx) in sentence.translations" :key="idx">
@@ -324,6 +325,19 @@ const filteredGrammarPoints = computed(() => {
 })
 
 const loading = ref(true)
+
+function debounce<T extends Function>(func: T, delay: number) {
+  let timer: NodeJS.Timeout | undefined
+  return (...args: any[]) => {
+    clearTimeout(timer)
+    timer = setTimeout(() => func(...args), delay)
+  }
+}
+
+async function onUpdateScroller() {
+  const debouncedProcessKeySentences = debounce(processKeySentences, 50)
+  debouncedProcessKeySentences()
+}
 
 async function fetchGrammarPoints() {
   const data = await exec(`
